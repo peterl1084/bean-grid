@@ -11,6 +11,7 @@ import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
@@ -30,6 +31,7 @@ import com.vaadin.ui.Grid.Column;
  * @author Peter / Vaadin
  */
 @Configuration
+@ComponentScan(basePackageClasses = { BeanGridEditorComponentProvider.class, BeanGridValueProvider.class })
 public class BeanGridConfiguration implements ApplicationContextAware {
 
 	private ApplicationContext appContext;
