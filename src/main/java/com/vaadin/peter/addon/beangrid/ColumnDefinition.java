@@ -1,6 +1,7 @@
 package com.vaadin.peter.addon.beangrid;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -132,5 +133,13 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 	@Override
 	public int compareTo(ColumnDefinition other) {
 		return this.getDefaultOrderNumber() - other.getDefaultOrderNumber();
+	}
+
+	public Method getReadMethod() {
+		return descriptor.getReadMethod();
+	}
+
+	public Method getWriteMethod() {
+		return descriptor.getWriteMethod();
 	}
 }

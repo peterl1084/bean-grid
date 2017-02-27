@@ -1,5 +1,6 @@
 package com.vaadin.peter.addon.beangrid;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
@@ -70,11 +71,12 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 
 	private <ITEM> Grid<ITEM> configureGridInstance(Class<ITEM> itemType) {
 		try {
+
 			List<ColumnDefinition> columnDefinitions = ColumnDefinitionTools.discoverColumnDefinitions(itemType);
-			Grid<ITEM> beanGrid = new Grid<ITEM>();
+			Grid<ITEM> grid = new Grid<>();
 
 			columnDefinitions.forEach(definition -> {
-				Column<ITEM, String> column = beanGrid.addColumn(item -> provideColumnValue(definition, item));
+				Column<ITEM, Object> column = grid.addColumn(item -> provideColumnValue(definition, item));
 				column.setCaption(definition.getTranslationKey());
 				if (definition.isDefaultHidable()) {
 					column.setHidable(definition.isDefaultHidable());
@@ -86,18 +88,28 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 						logger.debug("Using " + editorComponentProvider.getCanonicalName()
 								+ " as the provider for finding editor component for " + definition.getPropertyName());
 						BeanGridEditorComponentProvider bean = appContext.getBean(editorComponentProvider);
-						column.setEditorComponent(bean.provideEditorComponent(definition));
+						column.setEditorComponent(bean.provideEditorComponent(definition), (item, value) -> {
+							invokeWrapToRuntime(definition.getWriteMethod(), item, value);
+						});
 						column.setEditable(true);
 					} catch (Exception e) {
 						throw new ColumnDefinitionException(
-								"Failed to configure editable column " + definition.getPropertyName(), e);
+								"Failed to configure editable column '" + definition.getPropertyName() + "'.", e);
 					}
 				});
 			});
 
-			return beanGrid;
+			return grid;
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to configure Vaadin Grid for type " + itemType.getCanonicalName(), e);
+		}
+	}
+
+	private <ITEM> void invokeWrapToRuntime(Method writeMethod, ITEM item, Object value) {
+		try {
+			writeMethod.invoke(item, value);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 
