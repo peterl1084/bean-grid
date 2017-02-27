@@ -33,43 +33,49 @@ public class ColumnDefinitionTools {
 	 *         {@link GridColumn}s on given itemType. The order of the returned
 	 *         list will be the order as defined in the {@link GridColumn}
 	 *         annotation's order.
-	 * @throws IntrospectionException
+	 * @throws ColumnDefinitionException
+	 *             if introspection of given itemType fails or if there are
+	 *             misconfigurations with {@link GridColumn} definitions.
 	 */
-	public static List<ColumnDefinition> discoverColumnDefinitions(Class<?> itemType) throws IntrospectionException {
+	public static List<ColumnDefinition> discoverColumnDefinitions(Class<?> itemType) {
 		logger.debug("Introspecting " + itemType.getCanonicalName());
-		BeanInfo beanInfo = Introspector.getBeanInfo(Objects.requireNonNull(itemType));
+
+		BeanInfo beanInfo = null;
+
+		try {
+			beanInfo = Introspector.getBeanInfo(Objects.requireNonNull(itemType));
+		} catch (IntrospectionException e) {
+			throw new ColumnDefinitionException(
+					"Failed to introspect bean of type " + itemType.getCanonicalName() + ".", e);
+		}
 
 		if (beanInfo == null) {
-			logger.warn("No introspection information available, not detecting Grid columns for "
-					+ itemType.getCanonicalName());
-			return Collections.emptyList();
+			throw new ColumnDefinitionException(
+					"No introspection information available for " + itemType.getCanonicalName() + ".");
 		}
 
 		List<ColumnDefinition> columnDefinitions = new ArrayList<>();
 		List<PropertyDescriptor> propertyDescriptors = Arrays.asList(beanInfo.getPropertyDescriptors());
 		for (PropertyDescriptor descriptor : propertyDescriptors) {
 			Method readMethod = descriptor.getReadMethod();
-			if (readMethod == null) {
-				logger.warn("Did not find read method for property descriptor of " + descriptor.getName() + " from "
-						+ itemType.getCanonicalName());
-			} else {
+			if (readMethod != null) {
 				Optional.ofNullable(readMethod.getAnnotation(GridColumn.class)).ifPresent(columnDefinition -> {
 					ColumnDefinition definition = new ColumnDefinition(columnDefinition, descriptor);
-					logger.debug("Found column definition from getter method: " + descriptor.getReadMethod().getName()
+					logger.debug("Found column definition from read method: " + descriptor.getReadMethod().getName()
 							+ " with: " + definition);
 					columnDefinitions.add(definition);
 				});
 			}
 		}
 
-		columnDefinitions.addAll(discoverFieldsWithGridColumnAnnotations(propertyDescriptors, itemType));
+		columnDefinitions.addAll(discoverFieldsWithGridColumnAnnotations(itemType, propertyDescriptors));
 		Collections.sort(columnDefinitions);
 
 		return columnDefinitions;
 	}
 
-	static List<ColumnDefinition> discoverFieldsWithGridColumnAnnotations(List<PropertyDescriptor> propertyDescriptors,
-			Class<?> itemType) {
+	static List<ColumnDefinition> discoverFieldsWithGridColumnAnnotations(Class<?> itemType,
+			List<PropertyDescriptor> propertyDescriptors) {
 		List<Field> allDeclaredFields = getDeclaredFields(itemType);
 
 		List<ColumnDefinition> fieldBasedColumnDefinitions = new ArrayList<>();
@@ -84,20 +90,21 @@ public class ColumnDefinitionTools {
 					Method readMethod = propertyDescriptor.getReadMethod();
 					if (readMethod != null) {
 						if (readMethod.getAnnotation(GridColumn.class) != null) {
-							logger.warn(itemType.getCanonicalName() + " has property " + fieldName
-									+ " with @GridColumn annotation that specifies a read method "
-									+ readMethod.getName()
-									+ " having also @GridColumn annotation defined. Only the field OR the method should have the annotation, not both.");
+							throw new ColumnDefinitionException("Found @GridColumn annotation from " + fieldName
+									+ " and " + propertyDescriptor.getReadMethod().getName()
+									+ ". The annotation should only be defined in either one.");
 						} else {
 							fieldBasedColumnDefinitions.add(new ColumnDefinition(columnDefinition, propertyDescriptor));
 						}
 					} else {
-						logger.warn("Did not find read method for property '" + fieldName + "' in "
-								+ itemType.getCanonicalName());
+						throw new ColumnDefinitionException("Found @GridColumn annotation from '" + fieldName + "' in "
+								+ itemType.getCanonicalName()
+								+ " and corresponding write method (setter) but not corresponding read method (getter), please add getter method for the property.");
 					}
 				} else {
-					logger.warn("Did not find property descriptor (method) for property '" + fieldName + "' in "
-							+ itemType.getCanonicalName());
+					throw new ColumnDefinitionException("Found @GridColumn annotation from '" + fieldName + "' in "
+							+ itemType.getCanonicalName()
+							+ " but not corresponding read method (getter), please add getter method for the property.");
 				}
 			});
 		});

@@ -1,21 +1,26 @@
 package com.vaadin.peter.addon.beangrid;
 
-import java.beans.IntrospectionException;
 import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.vaadin.peter.addon.beangrid.testmaterial.BeanWithDoubleDefinitions;
 import com.vaadin.peter.addon.beangrid.testmaterial.SimpleBean;
 import com.vaadin.peter.addon.beangrid.testmaterial.SimpleBeanFieldDefinitions;
 import com.vaadin.peter.addon.beangrid.testmaterial.SimpleBeanWithBaseClass;
+import com.vaadin.peter.addon.beangrid.testmaterial.SimpleBeanWithOnlyWriteMethod;
+import com.vaadin.peter.addon.beangrid.testmaterial.SimpleBeanWithoutReadMethod;
 
 public class TestColumnDefinitions {
 
+	private static Logger logger = LoggerFactory.getLogger(TestColumnDefinitions.class);
+
 	@Test
-	public void testColumnDefinitionLookup_simpleBeanWithMehtodDefinitions_definitionsFound()
-			throws IntrospectionException {
+	public void testColumnDefinitionLookup_simpleBeanWithMehtodDefinitions_definitionsFound() {
 		List<ColumnDefinition> columnDefinitions = ColumnDefinitionTools.discoverColumnDefinitions(SimpleBean.class);
 		Assert.assertEquals(2, columnDefinitions.size());
 
@@ -31,8 +36,7 @@ public class TestColumnDefinitions {
 	}
 
 	@Test
-	public void testColumnDefinitionLookup_simpleBeanExtendedFromBaseClassWithMehtodDefinitions_definitionsFound()
-			throws IntrospectionException {
+	public void testColumnDefinitionLookup_simpleBeanExtendedFromBaseClassWithMehtodDefinitions_definitionsFound() {
 		List<ColumnDefinition> columnDefinitions = ColumnDefinitionTools
 				.discoverColumnDefinitions(SimpleBeanWithBaseClass.class);
 		Assert.assertEquals(4, columnDefinitions.size());
@@ -59,7 +63,7 @@ public class TestColumnDefinitions {
 	}
 
 	@Test
-	public void testColumnDefinitionLookup_simpleBeanWithFieldDefinitions_definitionsFound() throws IntrospectionException {
+	public void testColumnDefinitionLookup_simpleBeanWithFieldDefinitions_definitionsFound() {
 		List<ColumnDefinition> columnDefinitions = ColumnDefinitionTools
 				.discoverColumnDefinitions(SimpleBeanFieldDefinitions.class);
 		Assert.assertEquals(2, columnDefinitions.size());
@@ -73,5 +77,35 @@ public class TestColumnDefinitions {
 		Assert.assertEquals(1, columnDefinitions.get(1).getDefaultOrderNumber());
 		Assert.assertEquals("lastname", columnDefinitions.get(1).getPropertyName());
 		Assert.assertEquals(String.class, columnDefinitions.get(1).getType());
+	}
+
+	@Test(expected = ColumnDefinitionException.class)
+	public void testColumnDefinitionLookup_simpleBeanWithDoubleDefinitions_definitionExceptionThrown() {
+		try {
+			ColumnDefinitionTools.discoverColumnDefinitions(BeanWithDoubleDefinitions.class);
+		} catch (ColumnDefinitionException e) {
+			logger.info("Expected error: " + e.getMessage());
+			throw e;
+		}
+	}
+
+	@Test(expected = ColumnDefinitionException.class)
+	public void testColumnDefinitionLookup_simpleBeanWithoutReadMethod_definitionExceptionThrown() {
+		try {
+			ColumnDefinitionTools.discoverColumnDefinitions(SimpleBeanWithoutReadMethod.class);
+		} catch (ColumnDefinitionException e) {
+			logger.info("Expected error: " + e.getMessage());
+			throw e;
+		}
+	}
+
+	@Test(expected = ColumnDefinitionException.class)
+	public void testColumnDefinitionLookup_simpleBeanWithoutReadMethodButWithWriteMethod_definitionExceptionThrown() {
+		try {
+			ColumnDefinitionTools.discoverColumnDefinitions(SimpleBeanWithOnlyWriteMethod.class);
+		} catch (ColumnDefinitionException e) {
+			logger.info("Expected error: " + e.getMessage());
+			throw e;
+		}
 	}
 }
