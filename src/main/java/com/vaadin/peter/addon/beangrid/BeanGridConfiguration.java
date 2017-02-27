@@ -125,15 +125,21 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private <ITEM> String provideColumnValue(ColumnDefinition definition, ITEM item) {
+		Class<?> columnDataType = definition.getType();
+		if (Number.class.isAssignableFrom(columnDataType)) {
+			columnDataType = Number.class;
+		}
+
 		ResolvableType textualValueProviderType = ResolvableType.forClassWithGenerics(BeanGridValueProvider.class,
-				definition.getType());
+				columnDataType);
+
 		List<String> valueProviderNames = Arrays.asList(appContext.getBeanNamesForType(textualValueProviderType));
 
 		if (!valueProviderNames.isEmpty()) {
 			BeanGridValueProvider valueProviderInstance = appContext.getBean(valueProviderNames.iterator().next(),
 					BeanGridValueProvider.class);
 
-			return valueProviderInstance.apply(invokeRead(definition.getReadMethod(), item));
+			return valueProviderInstance.provideValue(invokeRead(definition.getReadMethod(), item));
 		}
 
 		return "no-provider";

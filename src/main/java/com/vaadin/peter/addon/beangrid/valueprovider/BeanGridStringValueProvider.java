@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 public class BeanGridStringValueProvider implements BeanGridValueProvider<String> {
 
 	@Override
-	public String apply(String source) {
-		return source;
+	public String provideValue(String sourceValue) {
+		return sourceValue;
 	}
 }
