@@ -65,6 +65,10 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 			columnDefinitions.forEach(definition -> {
 				Column<ITEM, String> column = beanGrid.addColumn(item -> provideColumnValue(definition, item));
 				column.setCaption(definition.getTranslationKey());
+				if (definition.isDefaultHidable()) {
+					column.setHidable(definition.isDefaultHidable());
+					column.setHidden(!definition.isDefaultVisible());
+				}
 			});
 
 			return beanGrid;

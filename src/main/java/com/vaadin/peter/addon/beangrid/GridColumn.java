@@ -22,8 +22,13 @@ public @interface GridColumn {
 	String translationKey();
 
 	/**
-	 * @return true if this column should be visible by default, false
-	 *         otherwise.
+	 * @return true if this column can be hidden by the user, false otherwise.
+	 */
+	boolean defaultHidable() default true;
+
+	/**
+	 * @return true if this column should be visible by default if set to
+	 *         hidable with {@link GridColumn#defaultHidable()}
 	 */
 	boolean defaultVisible() default true;
 

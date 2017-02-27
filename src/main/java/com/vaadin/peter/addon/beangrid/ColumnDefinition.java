@@ -87,6 +87,14 @@ class ColumnDefinition implements Comparable<ColumnDefinition> {
 		return columnDefinitionAnnotation.defaultVisible();
 	}
 
+	/**
+	 * @return true if this column can by default be hidden by the user, false
+	 *         otherwise.
+	 */
+	public boolean isDefaultHidable() {
+		return columnDefinitionAnnotation.defaultHidable();
+	}
+
 	@Override
 	public String toString() {
 		return "property: " + getPropertyName() + ", key: " + getTranslationKey() + ", default order: "
