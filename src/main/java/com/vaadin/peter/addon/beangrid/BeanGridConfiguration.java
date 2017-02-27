@@ -91,7 +91,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 								+ " as the provider for finding editor component for " + definition.getPropertyName());
 						BeanGridEditorComponentProvider bean = appContext.getBean(editorComponentProvider);
 						column.setEditorComponent(bean.provideEditorComponent(definition), (item, value) -> {
-							invokeWrapToRuntime(definition.getWriteMethod(), item, value);
+							invokeWrite(definition.getWriteMethod(), item, value);
 						});
 						column.setEditable(true);
 					} catch (Exception e) {
@@ -107,9 +107,17 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 		}
 	}
 
-	private <ITEM> void invokeWrapToRuntime(Method writeMethod, ITEM item, Object value) {
+	private <ITEM> void invokeWrite(Method writeMethod, ITEM item, Object... value) {
 		try {
 			writeMethod.invoke(item, value);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private <ITEM, TYPE> TYPE invokeRead(Method readMethod, ITEM item) {
+		try {
+			return (TYPE) readMethod.invoke(item);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -125,7 +133,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 			BeanGridValueProvider valueProviderInstance = appContext.getBean(valueProviderNames.iterator().next(),
 					BeanGridValueProvider.class);
 
-			return valueProviderInstance.apply(item);
+			return valueProviderInstance.apply(invokeRead(definition.getReadMethod(), item));
 		}
 
 		return "no-provider";
