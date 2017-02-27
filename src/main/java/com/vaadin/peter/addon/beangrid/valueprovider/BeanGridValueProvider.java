@@ -1,5 +1,7 @@
 package com.vaadin.peter.addon.beangrid.valueprovider;
 
+import com.vaadin.data.ValueProvider;
+
 /**
  * BeanGridTextualValueProvider defines a "converter" between given TYPE and
  * String. The BeanGridTextualValueProviders are used with BeanGrid for
@@ -10,11 +12,8 @@ package com.vaadin.peter.addon.beangrid.valueprovider;
  * @param <TYPE>
  *            type of the value to be converter to String
  */
-public interface BeanGridTextualValueProvider<TYPE> {
+public interface BeanGridValueProvider<SOURCE> extends ValueProvider<SOURCE, String> {
 
-	/**
-	 * @param cellValue
-	 * @return Textual value of given cellValue with given TYPE.
-	 */
-	String provideTextualValue(TYPE cellValue);
+	@Override
+	String apply(SOURCE source);
 }

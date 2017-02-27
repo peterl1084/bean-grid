@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.ResolvableType;
 
-import com.vaadin.peter.addon.beangrid.valueprovider.BeanGridTextualValueProvider;
+import com.vaadin.peter.addon.beangrid.valueprovider.BeanGridValueProvider;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
 
@@ -165,15 +165,15 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private <ITEM> String provideColumnValue(ColumnDefinition definition, ITEM item) {
-		ResolvableType textualValueProviderType = ResolvableType
-				.forClassWithGenerics(BeanGridTextualValueProvider.class, definition.getType());
+		ResolvableType textualValueProviderType = ResolvableType.forClassWithGenerics(BeanGridValueProvider.class,
+				definition.getType());
 		List<String> valueProviderNames = Arrays.asList(appContext.getBeanNamesForType(textualValueProviderType));
 
 		if (!valueProviderNames.isEmpty()) {
-			BeanGridTextualValueProvider valueProviderInstance = appContext
-					.getBean(valueProviderNames.iterator().next(), BeanGridTextualValueProvider.class);
+			BeanGridValueProvider valueProviderInstance = appContext.getBean(valueProviderNames.iterator().next(),
+					BeanGridValueProvider.class);
 
-			return valueProviderInstance.provideTextualValue(item);
+			return valueProviderInstance.apply(item);
 		}
 
 		return "no-provider";
