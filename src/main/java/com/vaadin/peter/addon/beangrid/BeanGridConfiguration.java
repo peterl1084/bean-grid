@@ -11,10 +11,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.ResolvableType;
 
+import com.vaadin.peter.addon.beangrid.editorprovider.BeanGridEditorComponentProvider;
+import com.vaadin.peter.addon.beangrid.editorprovider.DefaultBeanGridEditorComponentProvider;
 import com.vaadin.peter.addon.beangrid.valueprovider.BeanGridValueProvider;
+import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
 
@@ -57,6 +61,13 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 		return grid;
 	}
 
+	@Bean
+	@UIScope
+	@Primary
+	public BeanGridEditorComponentProvider configureEditorComponentProvider() {
+		return new DefaultBeanGridEditorComponentProvider();
+	}
+
 	private <ITEM> Grid<ITEM> configureGridInstance(Class<ITEM> itemType) {
 		try {
 			List<ColumnDefinition> columnDefinitions = ColumnDefinitionTools.discoverColumnDefinitions(itemType);
@@ -69,6 +80,19 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 					column.setHidable(definition.isDefaultHidable());
 					column.setHidden(!definition.isDefaultVisible());
 				}
+
+				definition.getEditorComponentProviderType().ifPresent(editorComponentProvider -> {
+					try {
+						logger.debug("Using " + editorComponentProvider.getCanonicalName()
+								+ " as the provider for finding editor component for " + definition.getPropertyName());
+						BeanGridEditorComponentProvider bean = appContext.getBean(editorComponentProvider);
+						column.setEditorComponent(bean.provideEditorComponent(definition));
+						column.setEditable(true);
+					} catch (Exception e) {
+						throw new ColumnDefinitionException(
+								"Failed to configure editable column " + definition.getPropertyName(), e);
+					}
+				});
 			});
 
 			return beanGrid;

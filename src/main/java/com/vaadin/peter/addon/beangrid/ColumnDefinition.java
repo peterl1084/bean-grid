@@ -9,15 +9,19 @@ import java.util.Optional;
 
 import org.springframework.util.StringUtils;
 
+import com.vaadin.peter.addon.beangrid.editorprovider.BeanGridEditorComponentProvider;
+
 /**
  * ColumnDefinition describes a column used in Vaadin Grid, defined
  * by @GridColumn annotation on field or method.
  * 
  * @author Peter / Vaadin
  */
-class ColumnDefinition implements Comparable<ColumnDefinition> {
+public class ColumnDefinition implements Comparable<ColumnDefinition> {
 
 	private GridColumn columnDefinitionAnnotation;
+	private EditableColumn editorDefinitionAnnotation;
+
 	private PropertyDescriptor descriptor;
 
 	private static final Map<Class<?>, Class<?>> primitiveMap;
@@ -35,8 +39,10 @@ class ColumnDefinition implements Comparable<ColumnDefinition> {
 		primitiveMap = Collections.unmodifiableMap(primitives);
 	}
 
-	public ColumnDefinition(GridColumn columnDefinitionAnnotation, PropertyDescriptor descriptor) {
+	public ColumnDefinition(GridColumn columnDefinitionAnnotation, EditableColumn editorDefinitionAnnotation,
+			PropertyDescriptor descriptor) {
 		this.columnDefinitionAnnotation = Objects.requireNonNull(columnDefinitionAnnotation);
+		this.editorDefinitionAnnotation = editorDefinitionAnnotation;
 		this.descriptor = Objects.requireNonNull(descriptor);
 	}
 
@@ -93,6 +99,28 @@ class ColumnDefinition implements Comparable<ColumnDefinition> {
 	 */
 	public boolean isDefaultHidable() {
 		return columnDefinitionAnnotation.defaultHidable();
+	}
+
+	/**
+	 * @return Optional of {@link BeanGridEditorComponentProvider} which will
+	 *         later be queried for component capable of providing editor
+	 *         component for this column.
+	 */
+	public Optional<Class<? extends BeanGridEditorComponentProvider>> getEditorComponentProviderType() {
+		if (editorDefinitionAnnotation != null) {
+			return Optional.of(editorDefinitionAnnotation.value());
+		}
+
+		return Optional.empty();
+	}
+
+	/**
+	 * @return true if this column is editable by having its
+	 *         {@link BeanGridEditorComponentProvider} configured, false
+	 *         otherwise.
+	 */
+	public boolean isEditable() {
+		return getEditorComponentProviderType().isPresent();
 	}
 
 	@Override

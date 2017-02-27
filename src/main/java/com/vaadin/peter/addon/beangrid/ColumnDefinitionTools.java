@@ -60,7 +60,8 @@ public class ColumnDefinitionTools {
 			Method readMethod = descriptor.getReadMethod();
 			if (readMethod != null) {
 				Optional.ofNullable(readMethod.getAnnotation(GridColumn.class)).ifPresent(columnDefinition -> {
-					ColumnDefinition definition = new ColumnDefinition(columnDefinition, descriptor);
+					ColumnDefinition definition = new ColumnDefinition(columnDefinition,
+							readMethod.getAnnotation(EditableColumn.class), descriptor);
 					logger.debug("Found column definition from read method: " + descriptor.getReadMethod().getName()
 							+ " with: " + definition);
 					columnDefinitions.add(definition);
@@ -94,7 +95,8 @@ public class ColumnDefinitionTools {
 									+ " and " + propertyDescriptor.getReadMethod().getName()
 									+ ". The annotation should only be defined in either one.");
 						} else {
-							fieldBasedColumnDefinitions.add(new ColumnDefinition(columnDefinition, propertyDescriptor));
+							fieldBasedColumnDefinitions.add(new ColumnDefinition(columnDefinition,
+									readMethod.getAnnotation(EditableColumn.class), propertyDescriptor));
 						}
 					} else {
 						throw new ColumnDefinitionException("Found @GridColumn annotation from '" + fieldName + "' in "
