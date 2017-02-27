@@ -8,12 +8,14 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.vaadin.peter.addon.beangrid.testmaterial.SimpleBean;
+import com.vaadin.peter.addon.beangrid.testmaterial.SimpleBeanFieldDefinitions;
 import com.vaadin.peter.addon.beangrid.testmaterial.SimpleBeanWithBaseClass;
 
 public class TestColumnDefinitions {
 
 	@Test
-	public void testColumnDefinitionLookup_simpleBean_definitionsFound() throws IntrospectionException {
+	public void testColumnDefinitionLookup_simpleBeanWithMehtodDefinitions_definitionsFound()
+			throws IntrospectionException {
 		List<ColumnDefinition> columnDefinitions = ColumnDefinitionTools.discoverColumnDefinitions(SimpleBean.class);
 		Assert.assertEquals(2, columnDefinitions.size());
 
@@ -29,7 +31,7 @@ public class TestColumnDefinitions {
 	}
 
 	@Test
-	public void testColumnDwefinitionLookup_simpleBeanExtendedFromBaseClass_definitionsFound()
+	public void testColumnDefinitionLookup_simpleBeanExtendedFromBaseClassWithMehtodDefinitions_definitionsFound()
 			throws IntrospectionException {
 		List<ColumnDefinition> columnDefinitions = ColumnDefinitionTools
 				.discoverColumnDefinitions(SimpleBeanWithBaseClass.class);
@@ -54,5 +56,22 @@ public class TestColumnDefinitions {
 		Assert.assertEquals(3, columnDefinitions.get(3).getDefaultOrderNumber());
 		Assert.assertEquals("lastname", columnDefinitions.get(3).getPropertyName());
 		Assert.assertEquals(String.class, columnDefinitions.get(3).getType());
+	}
+
+	@Test
+	public void testColumnDefinitionLookup_simpleBeanWithFieldDefinitions_definitionsFound() throws IntrospectionException {
+		List<ColumnDefinition> columnDefinitions = ColumnDefinitionTools
+				.discoverColumnDefinitions(SimpleBeanFieldDefinitions.class);
+		Assert.assertEquals(2, columnDefinitions.size());
+
+		Assert.assertEquals("first.name", columnDefinitions.get(0).getTranslationKey());
+		Assert.assertEquals(0, columnDefinitions.get(0).getDefaultOrderNumber());
+		Assert.assertEquals("firstname", columnDefinitions.get(0).getPropertyName());
+		Assert.assertEquals(String.class, columnDefinitions.get(0).getType());
+
+		Assert.assertEquals("last.name", columnDefinitions.get(1).getTranslationKey());
+		Assert.assertEquals(1, columnDefinitions.get(1).getDefaultOrderNumber());
+		Assert.assertEquals("lastname", columnDefinitions.get(1).getPropertyName());
+		Assert.assertEquals(String.class, columnDefinitions.get(1).getType());
 	}
 }

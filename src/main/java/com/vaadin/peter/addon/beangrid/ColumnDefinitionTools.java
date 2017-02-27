@@ -92,11 +92,11 @@ public class ColumnDefinitionTools {
 							fieldBasedColumnDefinitions.add(new ColumnDefinition(columnDefinition, propertyDescriptor));
 						}
 					} else {
-						logger.warn("Did not find read method for property descriptor of " + fieldName + " from "
+						logger.warn("Did not find read method for property '" + fieldName + "' in "
 								+ itemType.getCanonicalName());
 					}
 				} else {
-					logger.warn("Did not find property descriptor for property " + fieldName + " from "
+					logger.warn("Did not find property descriptor (method) for property '" + fieldName + "' in "
 							+ itemType.getCanonicalName());
 				}
 			});
