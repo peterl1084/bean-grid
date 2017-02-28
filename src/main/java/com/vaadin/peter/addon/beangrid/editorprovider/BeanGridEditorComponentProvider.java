@@ -2,9 +2,17 @@ package com.vaadin.peter.addon.beangrid.editorprovider;
 
 import com.vaadin.data.HasValue;
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
-import com.vaadin.ui.Component;
 
-public interface BeanGridEditorComponentProvider<FIELD_TYPE> {
+public interface BeanGridEditorComponentProvider<BEAN_FIELD_TYPE> {
 
-	<EDITOR extends Component & HasValue<FIELD_TYPE>> EDITOR provideEditorComponent(ColumnDefinition columnDefinition);
+	HasValue<?> provideEditorComponent(ColumnDefinition columnDefinition);
+
+	default boolean requiresConversion() {
+		return this instanceof BeanGridValueConvertingEditorComponentProvider;
+	}
+
+	default BeanGridValueConvertingEditorComponentProvider<?, ?> asConvertable() {
+		return BeanGridValueConvertingEditorComponentProvider.class.cast(this);
+	}
+
 }

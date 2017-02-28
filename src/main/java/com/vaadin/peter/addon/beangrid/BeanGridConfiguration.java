@@ -17,6 +17,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.ResolvableType;
 
 import com.vaadin.data.Binder.Binding;
+import com.vaadin.data.Binder.BindingBuilder;
+import com.vaadin.data.Converter;
 import com.vaadin.data.HasValue;
 import com.vaadin.peter.addon.beangrid.editorprovider.BeanGridEditorComponentProvider;
 import com.vaadin.peter.addon.beangrid.valueprovider.BeanGridValueProvider;
@@ -82,17 +84,27 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 
 					List<String> editorProviderNames = Arrays
 							.asList(appContext.getBeanNamesForType(editorProviderType));
+
 					if (!editorProviderNames.isEmpty()) {
-						BeanGridEditorComponentProvider<?> editorProvider = appContext
+						BeanGridEditorComponentProvider<Object> editorProvider = appContext
 								.getBean(editorProviderNames.iterator().next(), BeanGridEditorComponentProvider.class);
+
 						HasValue<?> editorComponent = editorProvider.provideEditorComponent(definition);
 
-						Binding<ITEM, ?> binding = grid.getEditor().getBinder().forField(editorComponent)
-								.bind((item) -> {
-									return invokeRead(definition.getReadMethod(), item);
-								}, (item, value) -> {
-									invokeWrite(definition.getWriteMethod(), item, value);
-								});
+						BindingBuilder<ITEM, Object> bindingBuilder = (BindingBuilder<ITEM, Object>) grid.getEditor()
+								.getBinder().forField(editorComponent);
+
+						if (editorProvider.requiresConversion()) {
+							Converter<Object, Object> converter = (Converter<Object, Object>) editorProvider
+									.asConvertable().getConverter();
+							bindingBuilder = bindingBuilder.withConverter(converter);
+						}
+
+						Binding<ITEM, ?> binding = bindingBuilder.bind((item) -> {
+							return invokeRead(definition.getReadMethod(), item);
+						}, (item, value) -> {
+							invokeWrite(definition.getWriteMethod(), item, value);
+						});
 
 						column.setEditorBinding(binding);
 						column.setEditable(true);

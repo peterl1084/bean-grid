@@ -96,7 +96,7 @@ public class ColumnDefinitionTools {
 									+ ". The annotation should only be defined in either one.");
 						} else {
 							fieldBasedColumnDefinitions.add(new ColumnDefinition(columnDefinition,
-									readMethod.getAnnotation(EditableColumn.class), propertyDescriptor));
+									field.getAnnotation(EditableColumn.class), propertyDescriptor));
 						}
 					} else {
 						throw new ColumnDefinitionException("Found @GridColumn annotation from '" + fieldName + "' in "

@@ -5,7 +5,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.vaadin.peter.addon.beangrid.editorprovider.BeanGridEditorComponentProvider;
 import com.vaadin.ui.Grid;
 
 /**
@@ -19,10 +18,4 @@ import com.vaadin.ui.Grid;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 public @interface EditableColumn {
 
-	/**
-	 * @return the type of the {@link BeanGridEditorComponentProvider} that is
-	 *         intended to be used as the provider that instantiates the editor
-	 *         components.
-	 */
-	Class<? extends BeanGridEditorComponentProvider> value() default BeanGridEditorComponentProvider.class;
 }
