@@ -17,8 +17,11 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.ResolvableType;
 
+import com.vaadin.data.Binder.Binding;
+import com.vaadin.data.HasValue;
+import com.vaadin.data.ValueProvider;
 import com.vaadin.peter.addon.beangrid.editorprovider.BeanGridEditorComponentProvider;
-import com.vaadin.peter.addon.beangrid.editorprovider.DefaultBeanGridEditorComponentProvider;
+import com.vaadin.peter.addon.beangrid.editorprovider.BeanGridTextFieldEditorProvider;
 import com.vaadin.peter.addon.beangrid.valueprovider.BeanGridValueProvider;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Grid;
@@ -68,7 +71,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 	@UIScope
 	@Primary
 	public BeanGridEditorComponentProvider configureEditorComponentProvider() {
-		return new DefaultBeanGridEditorComponentProvider();
+		return new BeanGridTextFieldEditorProvider();
 	}
 
 	private <ITEM> Grid<ITEM> configureGridInstance(Class<ITEM> itemType) {
@@ -85,20 +88,28 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 					column.setHidden(!definition.isDefaultVisible());
 				}
 
-				definition.getEditorComponentProviderType().ifPresent(editorComponentProvider -> {
-					try {
-						logger.debug("Using " + editorComponentProvider.getCanonicalName()
-								+ " as the provider for finding editor component for " + definition.getPropertyName());
-						BeanGridEditorComponentProvider bean = appContext.getBean(editorComponentProvider);
-						column.setEditorComponent(bean.provideEditorComponent(definition), (item, value) -> {
-							invokeWrite(definition.getWriteMethod(), item, value);
-						});
+				if (definition.isEditable()) {
+					ResolvableType editorProviderType = ResolvableType
+							.forClassWithGenerics(BeanGridEditorComponentProvider.class, definition.getType());
+
+					List<String> editorProviderNames = Arrays
+							.asList(appContext.getBeanNamesForType(editorProviderType));
+					if (!editorProviderNames.isEmpty()) {
+						BeanGridEditorComponentProvider<?> editorProvider = appContext
+								.getBean(editorProviderNames.iterator().next(), BeanGridEditorComponentProvider.class);
+						HasValue<?> editorComponent = editorProvider.provideEditorComponent(definition);
+
+						Binding<ITEM, ?> binding = grid.getEditor().getBinder().forField(editorComponent)
+								.bind((item) -> {
+									return invokeRead(definition.getReadMethod(), item);
+								}, (item, value) -> {
+									invokeWrite(definition.getWriteMethod(), item, value);
+								});
+
+						column.setEditorBinding(binding);
 						column.setEditable(true);
-					} catch (Exception e) {
-						throw new ColumnDefinitionException(
-								"Failed to configure editable column '" + definition.getPropertyName() + "'.", e);
 					}
-				});
+				}
 			});
 
 			return grid;

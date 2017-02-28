@@ -7,10 +7,11 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.TextField;
 
 @SpringComponent
-public class DefaultBeanGridEditorComponentProvider implements BeanGridEditorComponentProvider {
+public class BeanGridTextFieldEditorProvider implements BeanGridEditorComponentProvider<String> {
 
 	@Override
-	public <EDITOR extends Component & HasValue<?>> EDITOR provideEditorComponent(ColumnDefinition columnDefinition) {
+	public <EDITOR extends Component & HasValue<String>> EDITOR provideEditorComponent(
+			ColumnDefinition columnDefinition) {
 		return (EDITOR) new TextField();
 	}
 }
