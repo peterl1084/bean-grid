@@ -1,6 +1,5 @@
 package com.vaadin.peter.addon.beangrid.editorprovider;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import com.vaadin.data.Converter;

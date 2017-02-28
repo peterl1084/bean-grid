@@ -3,6 +3,7 @@ package com.vaadin.peter.addon.beangrid;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +65,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 		return grid;
 	}
 
+	@SuppressWarnings("unchecked")
 	private <ITEM> Grid<ITEM> configureGridInstance(Class<ITEM> itemType) {
 		try {
 
@@ -85,30 +87,40 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 					List<String> editorProviderNames = Arrays
 							.asList(appContext.getBeanNamesForType(editorProviderType));
 
-					if (!editorProviderNames.isEmpty()) {
-						BeanGridEditorComponentProvider<Object> editorProvider = appContext
-								.getBean(editorProviderNames.iterator().next(), BeanGridEditorComponentProvider.class);
-
-						HasValue<?> editorComponent = editorProvider.provideEditorComponent(definition);
-
-						BindingBuilder<ITEM, Object> bindingBuilder = (BindingBuilder<ITEM, Object>) grid.getEditor()
-								.getBinder().forField(editorComponent);
-
-						if (editorProvider.requiresConversion()) {
-							Converter<Object, Object> converter = (Converter<Object, Object>) editorProvider
-									.asConvertable().getConverter();
-							bindingBuilder = bindingBuilder.withConverter(converter);
-						}
-
-						Binding<ITEM, ?> binding = bindingBuilder.bind((item) -> {
-							return invokeRead(definition.getReadMethod(), item);
-						}, (item, value) -> {
-							invokeWrite(definition.getWriteMethod(), item, value);
-						});
-
-						column.setEditorBinding(binding);
-						column.setEditable(true);
+					if (editorProviderNames.isEmpty()) {
+						throw new ColumnDefinitionException("Could not find editor component provider for "
+								+ definition.getType().getSimpleName() + ", please implement appropriate "
+								+ BeanGridEditorComponentProvider.class.getSimpleName() + " as Spring bean.");
 					}
+
+					if (editorProviderNames.size() > 1) {
+						throw new ColumnDefinitionException(
+								"More than one component provider exists for " + definition.getType().getSimpleName()
+										+ ": " + editorProviderNames.stream().collect(Collectors.joining(", ")));
+					}
+
+					BeanGridEditorComponentProvider<Object> editorProvider = appContext
+							.getBean(editorProviderNames.iterator().next(), BeanGridEditorComponentProvider.class);
+
+					HasValue<?> editorComponent = editorProvider.provideEditorComponent(definition);
+
+					BindingBuilder<ITEM, Object> bindingBuilder = (BindingBuilder<ITEM, Object>) grid.getEditor()
+							.getBinder().forField(editorComponent);
+
+					if (editorProvider.requiresConversion()) {
+						Converter<Object, Object> converter = (Converter<Object, Object>) editorProvider.asConvertable()
+								.getConverter();
+						bindingBuilder = bindingBuilder.withConverter(converter);
+					}
+
+					Binding<ITEM, ?> binding = bindingBuilder.bind((item) -> {
+						return invokeRead(definition.getReadMethod(), item);
+					}, (item, value) -> {
+						invokeWrite(definition.getWriteMethod(), item, value);
+					});
+
+					column.setEditorBinding(binding);
+					column.setEditable(true);
 				}
 			});
 
