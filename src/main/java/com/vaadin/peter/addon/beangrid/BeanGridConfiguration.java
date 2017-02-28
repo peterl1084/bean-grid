@@ -13,17 +13,13 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.ResolvableType;
 
 import com.vaadin.data.Binder.Binding;
 import com.vaadin.data.HasValue;
-import com.vaadin.data.ValueProvider;
 import com.vaadin.peter.addon.beangrid.editorprovider.BeanGridEditorComponentProvider;
-import com.vaadin.peter.addon.beangrid.editorprovider.BeanGridTextFieldEditorProvider;
 import com.vaadin.peter.addon.beangrid.valueprovider.BeanGridValueProvider;
-import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
 
@@ -51,7 +47,6 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 
 		ResolvableType injectionPointType = dependencyDescriptor.getResolvableType();
 		if (!injectionPointType.hasGenerics()) {
-			logger.error("Grid injection point does not declare generic type, aborting");
 			throw new IllegalStateException("Grid injection point is expected to declare a static item type");
 		}
 
@@ -65,13 +60,6 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 		logger.debug("Done configuring Grid for " + itemType.getName() + " in " + configTime + "ms");
 
 		return grid;
-	}
-
-	@Bean
-	@UIScope
-	@Primary
-	public BeanGridEditorComponentProvider configureEditorComponentProvider() {
-		return new BeanGridTextFieldEditorProvider();
 	}
 
 	private <ITEM> Grid<ITEM> configureGridInstance(Class<ITEM> itemType) {
