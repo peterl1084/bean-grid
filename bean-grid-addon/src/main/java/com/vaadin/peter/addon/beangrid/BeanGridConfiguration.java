@@ -138,6 +138,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private <ITEM, TYPE> TYPE invokeRead(Method readMethod, ITEM item) {
 		try {
 			return (TYPE) readMethod.invoke(item);
