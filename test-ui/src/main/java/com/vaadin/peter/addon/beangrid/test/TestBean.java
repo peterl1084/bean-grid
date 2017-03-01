@@ -2,7 +2,10 @@ package com.vaadin.peter.addon.beangrid.test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.UUID;
+
+import javax.validation.constraints.NotNull;
 
 import com.vaadin.peter.addon.beangrid.EditableColumn;
 import com.vaadin.peter.addon.beangrid.GridColumn;
@@ -16,12 +19,15 @@ public class TestBean {
 	private LocalDate birthDate;
 
 	@GridColumn(translationKey = "big.decimal", defaultOrder = 3)
+	@EditableColumn
 	private BigDecimal bdValue;
 
 	@GridColumn(translationKey = "int.value", defaultOrder = 4)
+	@EditableColumn
 	private int intValue;
 
 	@GridColumn(translationKey = "integer.object.value", defaultOrder = 5)
+	@EditableColumn
 	private Integer integerObjectValue;
 
 	@GridColumn(translationKey = "double.value", defaultOrder = 6)
@@ -29,7 +35,24 @@ public class TestBean {
 	private double doubleValue;
 
 	@GridColumn(translationKey = "double.object.value", defaultOrder = 7)
+	@EditableColumn
 	private Double doubleObjectValue;
+
+	@GridColumn(translationKey = "char.value", defaultOrder = 8)
+	@EditableColumn
+	private char characterValue;
+
+	@GridColumn(translationKey = "boolean.value", defaultOrder = 9)
+	@EditableColumn
+	private boolean booleanValue;
+
+	@GridColumn(translationKey = "boolean.object.value", defaultOrder = 10)
+	@EditableColumn
+	private Boolean booleanObjectValue;
+
+	@GridColumn(translationKey = "date.object.value", defaultOrder = 10)
+	@EditableColumn
+	private Date dateObject;
 
 	public TestBean() {
 		id = UUID.randomUUID().toString();
@@ -48,10 +71,6 @@ public class TestBean {
 		return firstName;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
 	@GridColumn(translationKey = "last.name", defaultOrder = 2)
 	@EditableColumn
 	public String getLastName() {
@@ -64,6 +83,7 @@ public class TestBean {
 
 	@GridColumn(translationKey = "birth.date", defaultOrder = 3)
 	@EditableColumn
+	@NotNull
 	public LocalDate getBirthDate() {
 		return birthDate;
 	}
@@ -122,11 +142,45 @@ public class TestBean {
 		this.doubleValue = doubleValue;
 	}
 
+	@NotNull
+	@EditableColumn
 	public Double getDoubleObjectValue() {
 		return doubleObjectValue;
 	}
 
 	public void setDoubleObjectValue(Double doubleObjectValue) {
 		this.doubleObjectValue = doubleObjectValue;
+	}
+
+	public char getCharacterValue() {
+		return characterValue;
+	}
+
+	public void setCharacterValue(char characterValue) {
+		this.characterValue = characterValue;
+	}
+
+	public Boolean getBooleanObjectValue() {
+		return booleanObjectValue;
+	}
+
+	public void setBooleanObjectValue(Boolean booleanObjectValue) {
+		this.booleanObjectValue = booleanObjectValue;
+	}
+
+	public Date getDateObject() {
+		return dateObject;
+	}
+
+	public void setDateObject(Date dateObject) {
+		this.dateObject = dateObject;
+	}
+
+	public boolean isBooleanValue() {
+		return booleanValue;
+	}
+
+	public void setBooleanValue(boolean booleanValue) {
+		this.booleanValue = booleanValue;
 	}
 }

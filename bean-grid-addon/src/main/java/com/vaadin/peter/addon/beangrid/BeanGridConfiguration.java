@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.ResolvableType;
 
+import com.vaadin.data.BeanValidationBinder;
 import com.vaadin.data.Binder.Binding;
 import com.vaadin.data.Binder.BindingBuilder;
 import com.vaadin.data.Converter;
@@ -71,6 +72,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 
 			List<ColumnDefinition> columnDefinitions = ColumnDefinitionTools.discoverColumnDefinitions(itemType);
 			Grid<ITEM> grid = new Grid<>();
+			grid.getEditor().setBinder(new BeanValidationBinder<>(itemType));
 
 			columnDefinitions.forEach(definition -> {
 				Column<ITEM, Object> column = grid.addColumn(item -> provideColumnValue(definition, item));
@@ -107,6 +109,8 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 					BindingBuilder<ITEM, Object> bindingBuilder = (BindingBuilder<ITEM, Object>) grid.getEditor()
 							.getBinder().forField(editorComponent);
 
+					bindingBuilder = bindingBuilder.withNullRepresentation(editorComponent.getEmptyValue());
+
 					if (editorProvider.requiresConversion()) {
 						Converter<Object, Object> converter = (Converter<Object, Object>) editorProvider.asConvertable()
 								.getConverter();
@@ -116,7 +120,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 					Binding<ITEM, ?> binding = bindingBuilder.bind((item) -> {
 						return invokeRead(definition.getReadMethod(), item);
 					}, (item, value) -> {
-						invokeWrite(definition.getWriteMethod(), item, value);
+						invokeWrite(definition, item, value);
 					});
 
 					column.setEditorBinding(binding);
@@ -130,9 +134,20 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 		}
 	}
 
-	private <ITEM> void invokeWrite(Method writeMethod, ITEM item, Object... value) {
+	private <ITEM> void invokeWrite(ColumnDefinition columnDefinition, ITEM item, Object value) {
 		try {
-			writeMethod.invoke(item, value);
+			if (value == null) {
+				if (columnDefinition.isPrimitiveTypeWriteMethod()) {
+					if (Boolean.class.equals(columnDefinition.getType())) {
+						value = false;
+					} else if (Character.class.equals(columnDefinition.getType())) {
+						value = Character.MIN_VALUE;
+					} else {
+						value = 0;
+					}
+				}
+			}
+			columnDefinition.getWriteMethod().invoke(item, value);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

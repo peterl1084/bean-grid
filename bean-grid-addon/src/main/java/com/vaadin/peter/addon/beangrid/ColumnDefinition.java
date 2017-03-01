@@ -2,6 +2,7 @@ package com.vaadin.peter.addon.beangrid;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,8 +10,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.util.StringUtils;
-
-import com.vaadin.peter.addon.beangrid.editorprovider.BeanGridEditorComponentProvider;
 
 /**
  * ColumnDefinition describes a column used in Vaadin Grid, defined
@@ -45,6 +44,16 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 		this.columnDefinitionAnnotation = Objects.requireNonNull(columnDefinitionAnnotation);
 		this.editorDefinitionAnnotation = editorDefinitionAnnotation;
 		this.descriptor = Objects.requireNonNull(descriptor);
+
+		if (descriptor.getWriteMethod() == null && editorDefinitionAnnotation != null) {
+			throw new ColumnDefinitionException("Column with property '" + getPropertyName()
+					+ "' has been marked as editable but it doesn't have corresponding write (setter) method.");
+		}
+
+		if (descriptor.getWriteMethod() != null && descriptor.getWriteMethod().getParameterCount() != 1) {
+			throw new ColumnDefinitionException("Write (setter) method for " + getPropertyName()
+					+ " has more than one parameter, it's expected to only have one");
+		}
 	}
 
 	/**
@@ -103,12 +112,11 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 	}
 
 	/**
-	 * @return true if this column is editable by having its
-	 *         {@link BeanGridEditorComponentProvider} configured, false
-	 *         otherwise.
+	 * @return true if this column is equipped with {@link EditableColumn}
+	 *         annotation and has write method (setter) defined.
 	 */
 	public boolean isEditable() {
-		return editorDefinitionAnnotation != null;
+		return editorDefinitionAnnotation != null && descriptor.getWriteMethod() != null;
 	}
 
 	@Override
@@ -120,6 +128,18 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 	@Override
 	public int compareTo(ColumnDefinition other) {
 		return this.getDefaultOrderNumber() - other.getDefaultOrderNumber();
+	}
+
+	/**
+	 * @return true if this column has a write method and if the parameter type
+	 *         of the write method is primitive, false otherwise.
+	 */
+	public boolean isPrimitiveTypeWriteMethod() {
+		if (descriptor.getWriteMethod() == null) {
+			return false;
+		}
+
+		return Arrays.asList(getWriteMethod().getParameterTypes()).iterator().next().isPrimitive();
 	}
 
 	public Method getReadMethod() {
