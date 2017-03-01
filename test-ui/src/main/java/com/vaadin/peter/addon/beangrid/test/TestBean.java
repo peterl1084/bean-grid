@@ -18,39 +18,39 @@ public class TestBean {
 	private String lastName;
 	private LocalDate birthDate;
 
-	@GridColumn(translationKey = "big.decimal", defaultOrder = 3)
+	@GridColumn(translationKey = "bigDecimalValue", defaultOrder = 3)
 	@EditableColumn
 	private BigDecimal bdValue;
 
-	@GridColumn(translationKey = "int.value", defaultOrder = 4)
+	@GridColumn(translationKey = "intPrimitiveValue", defaultOrder = 4)
 	@EditableColumn
 	private int intValue;
 
-	@GridColumn(translationKey = "integer.object.value", defaultOrder = 5)
+	@GridColumn(translationKey = "integerObjectValue", defaultOrder = 5)
 	@EditableColumn
 	private Integer integerObjectValue;
 
-	@GridColumn(translationKey = "double.value", defaultOrder = 6)
+	@GridColumn(translationKey = "doublePrimitiveValue", defaultOrder = 6)
 	@EditableColumn
 	private double doubleValue;
 
-	@GridColumn(translationKey = "double.object.value", defaultOrder = 7)
+	@GridColumn(translationKey = "doubleObjectValue", defaultOrder = 7)
 	@EditableColumn
 	private Double doubleObjectValue;
 
-	@GridColumn(translationKey = "char.value", defaultOrder = 8)
+	@GridColumn(translationKey = "charPrimitiveValue", defaultOrder = 8)
 	@EditableColumn
 	private char characterValue;
 
-	@GridColumn(translationKey = "boolean.value", defaultOrder = 9)
+	@GridColumn(translationKey = "booleanPrimitiveValue", defaultOrder = 9)
 	@EditableColumn
 	private boolean booleanValue;
 
-	@GridColumn(translationKey = "boolean.object.value", defaultOrder = 10)
+	@GridColumn(translationKey = "booleanObjectValue", defaultOrder = 10)
 	@EditableColumn
 	private Boolean booleanObjectValue;
 
-	@GridColumn(translationKey = "date.object.value", defaultOrder = 10)
+	@GridColumn(translationKey = "dateObjectValue", defaultOrder = 10)
 	@EditableColumn
 	private Date dateObject;
 
@@ -66,12 +66,12 @@ public class TestBean {
 		this.birthDate = birthDate;
 	}
 
-	@GridColumn(translationKey = "first.name", defaultOrder = 1)
+	@GridColumn(translationKey = "firstName", defaultOrder = 1)
 	public String getFirstName() {
 		return firstName;
 	}
 
-	@GridColumn(translationKey = "last.name", defaultOrder = 2)
+	@GridColumn(translationKey = "lastName", defaultOrder = 2)
 	@EditableColumn
 	public String getLastName() {
 		return lastName;
@@ -81,7 +81,7 @@ public class TestBean {
 		this.lastName = lastName;
 	}
 
-	@GridColumn(translationKey = "birth.date", defaultOrder = 3)
+	@GridColumn(translationKey = "birthDate", defaultOrder = 3)
 	@EditableColumn
 	@NotNull
 	public LocalDate getBirthDate() {
