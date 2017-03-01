@@ -50,7 +50,7 @@ public class TestBean {
 	@EditableColumn
 	private Boolean booleanObjectValue;
 
-	@GridColumn(translationKey = "dateObjectValue", defaultOrder = 10)
+	@GridColumn(translationKey = "dateObjectValue", defaultOrder = 11)
 	@EditableColumn
 	private Date dateObject;
 
