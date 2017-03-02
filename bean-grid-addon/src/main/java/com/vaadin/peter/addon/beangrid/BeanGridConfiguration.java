@@ -98,7 +98,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 
 			columnDefinitions.forEach(definition -> {
 				Column<ITEM, Object> column = grid.addColumn(item -> provideColumnValue(definition, item));
-				definition.setColumn(column);
+				column.setId(definition.getPropertyName());
 
 				if (i18NProvider != null) {
 					column.setCaption(i18NProvider.provideTranslation(definition.getTranslationKey()));
@@ -131,7 +131,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 		if (ListDataProvider.class.isAssignableFrom(grid.getDataProvider().getClass())) {
 			ListDataProvider<ITEM> dataProvider = ListDataProvider.class.cast(grid.getDataProvider());
 
-			FooterCell footerCell = grid.getFooterRow(0).getCell(definition.getColumn());
+			FooterCell footerCell = grid.getFooterRow(0).getCell(definition.getPropertyName());
 			List<PROPERTY> propertyValues = (List<PROPERTY>) dataProvider.getItems().stream()
 					.map(item -> invokeRead(definition.getReadMethod(), item)).collect(Collectors.toList());
 
