@@ -99,6 +99,9 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 			columnDefinitions.forEach(definition -> {
 				Column<ITEM, Object> column = grid.addColumn(item -> provideColumnValue(definition, item));
 				column.setId(definition.getPropertyName());
+				column.setStyleGenerator((item) -> {
+					return definition.getColumnAlignment().getStyleName();
+				});
 
 				if (i18NProvider != null) {
 					column.setCaption(i18NProvider.provideTranslation(definition.getTranslationKey()));

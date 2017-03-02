@@ -44,4 +44,10 @@ public @interface GridColumn {
 	 *         method.
 	 */
 	String propertyName() default "";
+
+	/**
+	 * @return the {@link ColumnAlignment} based on which the textual alignment
+	 *         of cell values of this column will be done.
+	 */
+	ColumnAlignment alignment() default ColumnAlignment.LEFT;
 }

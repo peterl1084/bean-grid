@@ -126,17 +126,6 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 		return summarizableDefinition != null;
 	}
 
-	@Override
-	public String toString() {
-		return "property: " + getPropertyName() + ", key: " + getTranslationKey() + ", default order: "
-				+ getDefaultOrderNumber() + " default visible: " + isDefaultVisible();
-	}
-
-	@Override
-	public int compareTo(ColumnDefinition other) {
-		return this.getDefaultOrderNumber() - other.getDefaultOrderNumber();
-	}
-
 	/**
 	 * @return true if this column has a write method and if the parameter type
 	 *         of the write method is primitive, false otherwise.
@@ -149,22 +138,47 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 		return Arrays.asList(getWriteMethod().getParameterTypes()).iterator().next().isPrimitive();
 	}
 
+	/**
+	 * @return Method for reading the property value of a cell within this
+	 *         column.
+	 */
 	public Method getReadMethod() {
 		return descriptor.getReadMethod();
 	}
 
+	/**
+	 * @return Method for writing the property value of a cell within this
+	 *         column.
+	 */
 	public Method getWriteMethod() {
 		return descriptor.getWriteMethod();
 	}
 
+	/**
+	 * @return the type of the {@link Summarizer} defined within the
+	 *         {@link SummarizableColumn} annotation. If no specific Summarizer
+	 *         is defined the DefaultNoOpSummarizer will be returned. It's
+	 *         purpose is to mark "null summarizer" and should not be used.
+	 */
 	@SuppressWarnings("unchecked")
 	public <T> Class<? extends Summarizer<T>> getSummarizerType() {
 		return (Class<? extends Summarizer<T>>) summarizableDefinition.summarizer();
 	}
 
+	/**
+	 * @return true if this column has a specific summarizer defined in
+	 *         {@link SummarizableColumn#summarizer()}, false otherwise.
+	 */
 	public boolean isSpecificSummarizerDefined() {
 		Class<? extends Summarizer<?>> summarizerType = getSummarizerType();
 		return !DefaultNoOpSummarizer.class.equals(summarizerType);
+	}
+
+	/**
+	 * @return the alignment associated with this column.
+	 */
+	public ColumnAlignment getColumnAlignment() {
+		return columnDefinitionAnnotation.alignment();
 	}
 
 	/**
@@ -200,5 +214,16 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 			throw new ColumnDefinitionException("Write (setter) method for " + getPropertyName()
 					+ " has more than one parameter, it's expected to only have one");
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "property: " + getPropertyName() + ", key: " + getTranslationKey() + ", default order: "
+				+ getDefaultOrderNumber() + " default visible: " + isDefaultVisible();
+	}
+
+	@Override
+	public int compareTo(ColumnDefinition other) {
+		return this.getDefaultOrderNumber() - other.getDefaultOrderNumber();
 	}
 }
