@@ -78,6 +78,10 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 			Grid<ITEM> grid = new Grid<>();
 			grid.getEditor().setBinder(new BeanValidationBinder<>(itemType));
 
+			if (ColumnDefinitionTools.isFooterRowRequired(columnDefinitions)) {
+				grid.appendFooterRow();
+			}
+
 			columnDefinitions.forEach(definition -> {
 				Column<ITEM, Object> column = grid.addColumn(item -> provideColumnValue(definition, item));
 

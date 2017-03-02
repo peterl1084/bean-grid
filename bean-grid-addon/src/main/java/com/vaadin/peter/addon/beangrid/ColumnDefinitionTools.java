@@ -74,6 +74,22 @@ public class ColumnDefinitionTools {
 		return columnDefinitions;
 	}
 
+	/**
+	 * Tests if footer row of the grid should be shown, false otherwise. The
+	 * footer row is considered to be required if the given list of
+	 * {@link ColumnDefinition}s has any summarizable columns.
+	 * 
+	 * @param columnDefinitions
+	 * @return true if footer row is required, false otherwise.
+	 */
+	public static boolean isFooterRowRequired(List<ColumnDefinition> columnDefinitions) {
+		if (columnDefinitions == null) {
+			return false;
+		}
+
+		return columnDefinitions.stream().filter(definition -> definition.isSummarizable()).findAny().isPresent();
+	}
+
 	static List<ColumnDefinition> discoverFieldsWithGridColumnAnnotations(Class<?> itemType,
 			List<PropertyDescriptor> propertyDescriptors) {
 		List<Field> allDeclaredFields = getDeclaredFields(itemType);
