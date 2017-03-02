@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 
 import com.vaadin.peter.addon.beangrid.EditableColumn;
 import com.vaadin.peter.addon.beangrid.GridColumn;
+import com.vaadin.peter.addon.beangrid.summary.SummarizableColumn;
 
 public class TestBean {
 
@@ -20,6 +21,7 @@ public class TestBean {
 
 	@GridColumn(translationKey = "bigDecimalValue", defaultOrder = 3)
 	@EditableColumn
+	@SummarizableColumn
 	private BigDecimal bdValue;
 
 	@GridColumn(translationKey = "intPrimitiveValue", defaultOrder = 4)

@@ -1,6 +1,7 @@
 package com.vaadin.peter.addon.beangrid;
 
 import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,6 +12,8 @@ import java.util.Optional;
 
 import org.springframework.util.StringUtils;
 
+import com.vaadin.peter.addon.beangrid.summary.SummarizableColumn;
+
 /**
  * ColumnDefinition describes a column used in Vaadin Grid, defined
  * by @GridColumn annotation on field or method.
@@ -20,7 +23,8 @@ import org.springframework.util.StringUtils;
 public class ColumnDefinition implements Comparable<ColumnDefinition> {
 
 	private GridColumn columnDefinitionAnnotation;
-	private EditableColumn editorDefinitionAnnotation;
+	private EditableColumn editorDefinition;
+	private SummarizableColumn summarizableDefinition;
 
 	private PropertyDescriptor descriptor;
 
@@ -39,21 +43,14 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 		primitiveMap = Collections.unmodifiableMap(primitives);
 	}
 
-	public ColumnDefinition(GridColumn columnDefinitionAnnotation, EditableColumn editorDefinitionAnnotation,
-			PropertyDescriptor descriptor) {
-		this.columnDefinitionAnnotation = Objects.requireNonNull(columnDefinitionAnnotation);
-		this.editorDefinitionAnnotation = editorDefinitionAnnotation;
+	public ColumnDefinition(PropertyDescriptor descriptor, Annotation... extraDefinitions) {
 		this.descriptor = Objects.requireNonNull(descriptor);
 
-		if (descriptor.getWriteMethod() == null && editorDefinitionAnnotation != null) {
-			throw new ColumnDefinitionException("Column with property '" + getPropertyName()
-					+ "' has been marked as editable but it doesn't have corresponding write (setter) method.");
-		}
+		columnDefinitionAnnotation = assignAnnotation(GridColumn.class, extraDefinitions);
+		editorDefinition = assignAnnotation(EditableColumn.class, extraDefinitions);
+		summarizableDefinition = assignAnnotation(SummarizableColumn.class, extraDefinitions);
 
-		if (descriptor.getWriteMethod() != null && descriptor.getWriteMethod().getParameterCount() != 1) {
-			throw new ColumnDefinitionException("Write (setter) method for " + getPropertyName()
-					+ " has more than one parameter, it's expected to only have one");
-		}
+		ifEditableAssertWritableOrThrow();
 	}
 
 	/**
@@ -116,7 +113,15 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 	 *         annotation and has write method (setter) defined.
 	 */
 	public boolean isEditable() {
-		return editorDefinitionAnnotation != null && descriptor.getWriteMethod() != null;
+		return editorDefinition != null && descriptor.getWriteMethod() != null;
+	}
+
+	/**
+	 * @return true if this column has the {@link SummarizableColumn} annotation
+	 *         in place, false otherwise.
+	 */
+	public boolean isSummarizable() {
+		return summarizableDefinition != null;
 	}
 
 	@Override
@@ -148,5 +153,40 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 
 	public Method getWriteMethod() {
 		return descriptor.getWriteMethod();
+	}
+
+	/**
+	 * Finds an annotation of given type from the given array of annotations.
+	 * 
+	 * @param annotationType
+	 * @param definitions
+	 * @return Annotation matching given annotationType from the given array of
+	 *         definitions or null if no such annotation is found.
+	 */
+	private <T extends Annotation> T assignAnnotation(Class<T> annotationType, Annotation[] definitions) {
+		if (definitions == null || definitions.length == 0) {
+			return null;
+		}
+
+		return Arrays.asList(definitions).stream()
+				.filter(annotation -> annotationType.isAssignableFrom(annotation.annotationType())).findFirst()
+				.map(annotation -> annotationType.cast(annotation)).orElse(null);
+	}
+
+	/**
+	 * @throws ColumnDefinitionException
+	 *             if marked as editable with {@link EditableColumn} but no
+	 *             write method present
+	 */
+	private void ifEditableAssertWritableOrThrow() throws ColumnDefinitionException {
+		if (descriptor.getWriteMethod() == null && editorDefinition != null) {
+			throw new ColumnDefinitionException("Column with property '" + getPropertyName()
+					+ "' has been marked as editable but it doesn't have corresponding write (setter) method.");
+		}
+
+		if (descriptor.getWriteMethod() != null && descriptor.getWriteMethod().getParameterCount() != 1) {
+			throw new ColumnDefinitionException("Write (setter) method for " + getPropertyName()
+					+ " has more than one parameter, it's expected to only have one");
+		}
 	}
 }
