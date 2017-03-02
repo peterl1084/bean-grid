@@ -11,6 +11,7 @@ import com.vaadin.peter.addon.beangrid.ColumnAlignment;
 import com.vaadin.peter.addon.beangrid.EditableColumn;
 import com.vaadin.peter.addon.beangrid.GridColumn;
 import com.vaadin.peter.addon.beangrid.summary.SummarizableColumn;
+import com.vaadin.peter.addon.beangrid.summary.SummarizableColumnStaticText;
 
 public class TestBean {
 
@@ -27,7 +28,7 @@ public class TestBean {
 
 	@GridColumn(translationKey = "intPrimitiveValue", defaultOrder = 4, alignment = ColumnAlignment.RIGHT)
 	@EditableColumn
-	@SummarizableColumn
+	@SummarizableColumnStaticText(translationKey = "this.is.static.text")
 	private int intValue;
 
 	@GridColumn(translationKey = "integerObjectValue", defaultOrder = 5)

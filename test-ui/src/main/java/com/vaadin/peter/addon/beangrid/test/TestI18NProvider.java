@@ -13,6 +13,8 @@ public class TestI18NProvider implements I18NProvider {
 			return "yep";
 		} else if ("false".equals(translationKey)) {
 			return "nope";
+		} else if ("this.is.static.text".equals(translationKey)) {
+			return "Static footer text";
 		}
 
 		return SharedUtil.propertyIdToHumanFriendly(translationKey);

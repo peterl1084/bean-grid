@@ -13,6 +13,7 @@ import java.util.Optional;
 import org.springframework.util.StringUtils;
 
 import com.vaadin.peter.addon.beangrid.summary.SummarizableColumn;
+import com.vaadin.peter.addon.beangrid.summary.SummarizableColumnStaticText;
 import com.vaadin.peter.addon.beangrid.summary.Summarizer;
 import com.vaadin.peter.addon.beangrid.summary.Summarizer.DefaultNoOpSummarizer;
 
@@ -27,6 +28,7 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 	private GridColumn columnDefinitionAnnotation;
 	private EditableColumn editorDefinition;
 	private SummarizableColumn summarizableDefinition;
+	private SummarizableColumnStaticText summarizableStaticDefinition;
 
 	private PropertyDescriptor descriptor;
 
@@ -51,8 +53,10 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 		columnDefinitionAnnotation = assignAnnotation(GridColumn.class, definitions);
 		editorDefinition = assignAnnotation(EditableColumn.class, definitions);
 		summarizableDefinition = assignAnnotation(SummarizableColumn.class, definitions);
+		summarizableStaticDefinition = assignAnnotation(SummarizableColumnStaticText.class, definitions);
 
 		ifEditableAssertWritableOrThrow();
+		assertOnlyOneSummarizableDefinedOrThrow();
 	}
 
 	/**
@@ -119,11 +123,12 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 	}
 
 	/**
-	 * @return true if this column has the {@link SummarizableColumn} annotation
-	 *         in place, false otherwise.
+	 * @return true if this column has the {@link SummarizableColumn} or
+	 *         {@link SummarizableColumnStaticText} annotation in place, false
+	 *         otherwise.
 	 */
 	public boolean isSummarizable() {
-		return summarizableDefinition != null;
+		return summarizableDefinition != null || summarizableStaticDefinition != null;
 	}
 
 	/**
@@ -182,6 +187,28 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 	}
 
 	/**
+	 * @return true if this {@link ColumnDefinition} has static summarizer
+	 *         configured with {@link SummarizableColumnStaticText} annotation,
+	 *         false otherwise.
+	 */
+	public boolean isStaticTextSummarizable() {
+		return summarizableStaticDefinition != null;
+	}
+
+	/**
+	 * @return the tranlation key provided with
+	 *         {@link SummarizableColumnStaticText#translationKey()} if present,
+	 *         otherwise null.
+	 */
+	public String getStaticTextSummarizerTranslationKey() {
+		if (summarizableStaticDefinition == null) {
+			return null;
+		}
+
+		return summarizableStaticDefinition.translationKey();
+	}
+
+	/**
 	 * Finds an annotation of given type from the given array of annotations.
 	 * 
 	 * @param annotationType
@@ -213,6 +240,21 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 		if (descriptor.getWriteMethod() != null && descriptor.getWriteMethod().getParameterCount() != 1) {
 			throw new ColumnDefinitionException("Write (setter) method for " + getPropertyName()
 					+ " has more than one parameter, it's expected to only have one");
+		}
+	}
+
+	/**
+	 * Tests that this definition doesn't have both types of summarizers
+	 * defined, but only either one if any. Otherwise will throw.
+	 * 
+	 * @throws ColumnDefinitionException
+	 *             if this column definition has more than one type of
+	 *             summarizer configured.
+	 */
+	private void assertOnlyOneSummarizableDefinedOrThrow() throws ColumnDefinitionException {
+		if (summarizableDefinition != null && summarizableStaticDefinition != null) {
+			throw new ColumnDefinitionException(getPropertyName()
+					+ " has more than one summarizer definition, it should only have either one or none.");
 		}
 	}
 

@@ -131,22 +131,29 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 
 	@SuppressWarnings("unchecked")
 	private <ITEM, PROPERTY> void refreshColumnSummary(Grid<ITEM> grid, ColumnDefinition definition) {
-		Summarizer<PROPERTY> summarizerFor = getSummarizerFor(definition);
-		if (ListDataProvider.class.isAssignableFrom(grid.getDataProvider().getClass())) {
-			ListDataProvider<ITEM> dataProvider = ListDataProvider.class.cast(grid.getDataProvider());
+		FooterCell footerCell = grid.getFooterRow(0).getCell(definition.getPropertyName());
+		footerCell.setStyleName(definition.getColumnAlignment().getStyleName());
 
-			FooterCell footerCell = grid.getFooterRow(0).getCell(definition.getPropertyName());
-			footerCell.setStyleName(definition.getColumnAlignment().getStyleName());
-			List<PROPERTY> propertyValues = (List<PROPERTY>) dataProvider.getItems().stream()
-					.map(item -> invokeRead(definition.getReadMethod(), item)).collect(Collectors.toList());
+		if (definition.isStaticTextSummarizable()) {
+			String translatedStaticText = i18NProvider
+					.provideTranslation(definition.getStaticTextSummarizerTranslationKey());
+			footerCell.setText(translatedStaticText);
+		} else {
+			Summarizer<PROPERTY> summarizerFor = getSummarizerFor(definition);
+			if (ListDataProvider.class.isAssignableFrom(grid.getDataProvider().getClass())) {
+				ListDataProvider<ITEM> dataProvider = ListDataProvider.class.cast(grid.getDataProvider());
 
-			if (summarizerFor.canSummarize(propertyValues)) {
-				PROPERTY summaryValue = summarizerFor.getSummary(propertyValues);
-				BeanGridValueProvider<PROPERTY> cellValueProvider = (BeanGridValueProvider<PROPERTY>) findValueProvider(
-						definition.getType());
-				footerCell.setText(cellValueProvider.provideValue(summaryValue));
-			} else {
-				footerCell.setText("-");
+				List<PROPERTY> propertyValues = (List<PROPERTY>) dataProvider.getItems().stream()
+						.map(item -> invokeRead(definition.getReadMethod(), item)).collect(Collectors.toList());
+
+				if (summarizerFor.canSummarize(propertyValues)) {
+					PROPERTY summaryValue = summarizerFor.getSummary(propertyValues);
+					BeanGridValueProvider<PROPERTY> cellValueProvider = (BeanGridValueProvider<PROPERTY>) findValueProvider(
+							definition.getType());
+					footerCell.setText(cellValueProvider.provideValue(summaryValue));
+				} else {
+					footerCell.setText("-");
+				}
 			}
 		}
 	}
