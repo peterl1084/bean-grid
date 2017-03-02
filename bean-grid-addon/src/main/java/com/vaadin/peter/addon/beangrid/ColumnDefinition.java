@@ -13,6 +13,9 @@ import java.util.Optional;
 import org.springframework.util.StringUtils;
 
 import com.vaadin.peter.addon.beangrid.summary.SummarizableColumn;
+import com.vaadin.peter.addon.beangrid.summary.Summarizer;
+import com.vaadin.peter.addon.beangrid.summary.Summarizer.DefaultNoOpSummarizer;
+import com.vaadin.ui.Grid.Column;
 
 /**
  * ColumnDefinition describes a column used in Vaadin Grid, defined
@@ -29,6 +32,7 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 	private PropertyDescriptor descriptor;
 
 	private static final Map<Class<?>, Class<?>> primitiveMap;
+	private Column<?, Object> column;
 
 	static {
 		Map<Class<?>, Class<?>> primitives = new HashMap<>();
@@ -155,6 +159,16 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 		return descriptor.getWriteMethod();
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T> Class<? extends Summarizer<T>> getSummarizerType() {
+		return (Class<? extends Summarizer<T>>) summarizableDefinition.summarizer();
+	}
+
+	public boolean isSpecificSummarizerDefined() {
+		Class<? extends Summarizer<?>> summarizerType = getSummarizerType();
+		return !DefaultNoOpSummarizer.class.equals(summarizerType);
+	}
+
 	/**
 	 * Finds an annotation of given type from the given array of annotations.
 	 * 
@@ -188,5 +202,13 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 			throw new ColumnDefinitionException("Write (setter) method for " + getPropertyName()
 					+ " has more than one parameter, it's expected to only have one");
 		}
+	}
+
+	public <ITEM> void setColumn(Column<ITEM, Object> column) {
+		this.column = column;
+	}
+
+	public Column<?, Object> getColumn() {
+		return column;
 	}
 }

@@ -23,10 +23,14 @@ import com.vaadin.data.Binder.Binding;
 import com.vaadin.data.Binder.BindingBuilder;
 import com.vaadin.data.Converter;
 import com.vaadin.data.HasValue;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.peter.addon.beangrid.editorprovider.BeanGridEditorComponentProvider;
+import com.vaadin.peter.addon.beangrid.summary.Summarizer;
 import com.vaadin.peter.addon.beangrid.valueprovider.BeanGridValueProvider;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
+import com.vaadin.ui.components.grid.FooterCell;
 
 /**
  * BeanGridConfiguration defines Vaadin's Grid component as Spring Bean with
@@ -35,7 +39,8 @@ import com.vaadin.ui.Grid.Column;
  * @author Peter / Vaadin
  */
 @Configuration
-@ComponentScan(basePackageClasses = { BeanGridEditorComponentProvider.class, BeanGridValueProvider.class })
+@ComponentScan(basePackageClasses = { BeanGridEditorComponentProvider.class, BeanGridValueProvider.class,
+		Summarizer.class })
 public class BeanGridConfiguration implements ApplicationContextAware {
 
 	private ApplicationContext appContext;
@@ -70,13 +75,21 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 		return grid;
 	}
 
-	@SuppressWarnings("unchecked")
 	private <ITEM> Grid<ITEM> configureGridInstance(Class<ITEM> itemType) {
 		try {
 
 			List<ColumnDefinition> columnDefinitions = ColumnDefinitionTools.discoverColumnDefinitions(itemType);
-			Grid<ITEM> grid = new Grid<>();
+
+			Grid<ITEM> grid = new Grid<ITEM>() {
+				@Override
+				public void setDataProvider(DataProvider<ITEM, ?> dataProvider) {
+					super.setDataProvider(dataProvider);
+					dataProvider.addDataProviderListener(e -> refreshSummaryFooter(this, columnDefinitions));
+				}
+			};
+
 			grid.getEditor().setBinder(new BeanValidationBinder<>(itemType));
+			grid.getEditor().addSaveListener(e -> refreshSummaryFooter(grid, columnDefinitions));
 
 			if (ColumnDefinitionTools.isFooterRowRequired(columnDefinitions)) {
 				grid.appendFooterRow();
@@ -84,6 +97,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 
 			columnDefinitions.forEach(definition -> {
 				Column<ITEM, Object> column = grid.addColumn(item -> provideColumnValue(definition, item));
+				definition.setColumn(column);
 
 				if (i18NProvider != null) {
 					column.setCaption(i18NProvider.provideTranslation(definition.getTranslationKey()));
@@ -95,48 +109,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 				}
 
 				if (definition.isEditable()) {
-					ResolvableType editorProviderType = ResolvableType
-							.forClassWithGenerics(BeanGridEditorComponentProvider.class, definition.getType());
-
-					List<String> editorProviderNames = Arrays
-							.asList(appContext.getBeanNamesForType(editorProviderType));
-
-					if (editorProviderNames.isEmpty()) {
-						throw new ColumnDefinitionException("Could not find editor component provider for "
-								+ definition.getType().getSimpleName() + ", please implement appropriate "
-								+ BeanGridEditorComponentProvider.class.getSimpleName() + " as Spring bean.");
-					}
-
-					if (editorProviderNames.size() > 1) {
-						throw new ColumnDefinitionException(
-								"More than one component provider exists for " + definition.getType().getSimpleName()
-										+ ": " + editorProviderNames.stream().collect(Collectors.joining(", ")));
-					}
-
-					BeanGridEditorComponentProvider<Object> editorProvider = appContext
-							.getBean(editorProviderNames.iterator().next(), BeanGridEditorComponentProvider.class);
-
-					HasValue<?> editorComponent = editorProvider.provideEditorComponent(definition);
-
-					BindingBuilder<ITEM, Object> bindingBuilder = (BindingBuilder<ITEM, Object>) grid.getEditor()
-							.getBinder().forField(editorComponent);
-
-					bindingBuilder = bindingBuilder.withNullRepresentation(editorComponent.getEmptyValue());
-
-					if (editorProvider.requiresConversion()) {
-						Converter<Object, Object> converter = (Converter<Object, Object>) editorProvider.asConvertable()
-								.getConverter();
-						bindingBuilder = bindingBuilder.withConverter(converter);
-					}
-
-					Binding<ITEM, ?> binding = bindingBuilder.bind((item) -> {
-						return invokeRead(definition.getReadMethod(), item);
-					}, (item, value) -> {
-						invokeWrite(definition, item, value);
-					});
-
-					column.setEditorBinding(binding);
-					column.setEditable(true);
+					setupEditableColumn(grid, definition, column);
 				}
 			});
 
@@ -144,6 +117,119 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to configure Vaadin Grid for type " + itemType.getCanonicalName(), e);
 		}
+	}
+
+	protected <ITEM> void refreshSummaryFooter(Grid<ITEM> grid, List<ColumnDefinition> definitions) {
+		definitions.stream().filter(definition -> definition.isSummarizable())
+				.forEach(definition -> refreshColumnSummary(grid, definition));
+	}
+
+	@SuppressWarnings("unchecked")
+	private <ITEM, PROPERTY> void refreshColumnSummary(Grid<ITEM> grid, ColumnDefinition definition) {
+		Summarizer<PROPERTY> summarizerFor = getSummarizerFor(definition);
+		if (ListDataProvider.class.isAssignableFrom(grid.getDataProvider().getClass())) {
+			ListDataProvider<ITEM> dataProvider = ListDataProvider.class.cast(grid.getDataProvider());
+
+			FooterCell footerCell = grid.getFooterRow(0).getCell(definition.getColumn());
+			List<PROPERTY> propertyValues = (List<PROPERTY>) dataProvider.getItems().stream()
+					.map(item -> invokeRead(definition.getReadMethod(), item)).collect(Collectors.toList());
+
+			if (summarizerFor.canSummarize(propertyValues)) {
+				PROPERTY summaryValue = summarizerFor.getSummary(propertyValues);
+				BeanGridValueProvider<PROPERTY> cellValueProvider = (BeanGridValueProvider<PROPERTY>) findValueProvider(
+						definition.getType());
+				footerCell.setText(cellValueProvider.provideValue(summaryValue));
+			} else {
+				footerCell.setText("-");
+			}
+		}
+	}
+
+	protected <TYPE> Summarizer<TYPE> getSummarizerFor(ColumnDefinition definition) {
+		Class<? extends Summarizer<TYPE>> summarizerType = null;
+		String summarizerBeanName = null;
+
+		if (definition.isSpecificSummarizerDefined()) {
+			summarizerType = definition.getSummarizerType();
+		} else {
+			ResolvableType resolvableSummarizerType = ResolvableType.forClassWithGenerics(Summarizer.class,
+					definition.getType());
+			List<String> availableSummarizerBeanNames = Arrays
+					.asList(appContext.getBeanNamesForType(resolvableSummarizerType));
+
+			if (availableSummarizerBeanNames.isEmpty()) {
+				throw new ColumnDefinitionException(
+						"No summarizer available for property type " + definition.getType().getSimpleName() + ".");
+			} else if (availableSummarizerBeanNames.size() > 1) {
+				throw new ColumnDefinitionException("There are more than one summarizer available for property type "
+						+ definition.getType().getSimpleName() + ": "
+						+ availableSummarizerBeanNames.stream().collect(Collectors.joining(", ")));
+			}
+
+			summarizerBeanName = availableSummarizerBeanNames.iterator().next();
+			summarizerType = (Class<? extends Summarizer<TYPE>>) appContext.getType(summarizerBeanName);
+		}
+
+		if (summarizerType == null) {
+			throw new ColumnDefinitionException("Could not determine type of the summarizer for column "
+					+ definition.getPropertyName() + " with type " + definition.getType().getSimpleName());
+		}
+
+		return appContext.getBean(summarizerBeanName, summarizerType);
+	}
+
+	/**
+	 * Sets up the editability of the column
+	 * 
+	 * @param grid
+	 * @param definition
+	 * @param column
+	 */
+
+	@SuppressWarnings("unchecked")
+	protected <ITEM> void setupEditableColumn(Grid<ITEM> grid, ColumnDefinition definition,
+			Column<ITEM, Object> column) {
+		ResolvableType editorProviderType = ResolvableType.forClassWithGenerics(BeanGridEditorComponentProvider.class,
+				definition.getType());
+
+		List<String> editorProviderNames = Arrays.asList(appContext.getBeanNamesForType(editorProviderType));
+
+		if (editorProviderNames.isEmpty()) {
+			throw new ColumnDefinitionException("Could not find editor component provider for "
+					+ definition.getType().getSimpleName() + ", please implement appropriate "
+					+ BeanGridEditorComponentProvider.class.getSimpleName() + " as Spring bean.");
+		}
+
+		if (editorProviderNames.size() > 1) {
+			throw new ColumnDefinitionException(
+					"More than one component provider exists for " + definition.getType().getSimpleName() + ": "
+							+ editorProviderNames.stream().collect(Collectors.joining(", ")));
+		}
+
+		BeanGridEditorComponentProvider<Object> editorProvider = appContext
+				.getBean(editorProviderNames.iterator().next(), BeanGridEditorComponentProvider.class);
+
+		HasValue<?> editorComponent = editorProvider.provideEditorComponent(definition);
+
+		BindingBuilder<ITEM, Object> bindingBuilder = (BindingBuilder<ITEM, Object>) grid.getEditor().getBinder()
+				.forField(editorComponent);
+
+		bindingBuilder = bindingBuilder.withNullRepresentation(editorComponent.getEmptyValue());
+
+		if (editorProvider.requiresConversion()) {
+			Converter<Object, Object> converter = (Converter<Object, Object>) editorProvider.asConvertable()
+					.getConverter();
+			bindingBuilder = bindingBuilder.withConverter(converter);
+		}
+
+		Binding<ITEM, ?> binding = bindingBuilder.bind((item) -> {
+			return invokeRead(definition.getReadMethod(), item);
+		}, (item, value) -> {
+			invokeWrite(definition, item, value);
+		});
+
+		column.setEditorBinding(binding);
+		column.setEditable(true);
 	}
 
 	private <ITEM> void invokeWrite(ColumnDefinition columnDefinition, ITEM item, Object value) {
@@ -174,26 +260,28 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private <ITEM> String provideColumnValue(ColumnDefinition definition, ITEM item) {
-		Class<?> columnDataType = definition.getType();
-		if (Number.class.isAssignableFrom(columnDataType)) {
-			columnDataType = Number.class;
+		BeanGridValueProvider<?> valueProviderInstance = findValueProvider(definition.getType());
+		return valueProviderInstance.provideValue(invokeRead(definition.getReadMethod(), item));
+	}
+
+	@SuppressWarnings("unchecked")
+	private <PROPERTY> BeanGridValueProvider<PROPERTY> findValueProvider(Class<PROPERTY> propertyType) {
+		if (Number.class.isAssignableFrom(propertyType)) {
+			propertyType = (Class<PROPERTY>) Number.class;
 		}
 
-		ResolvableType textualValueProviderType = ResolvableType.forClassWithGenerics(BeanGridValueProvider.class,
-				columnDataType);
+		ResolvableType valueProviderType = ResolvableType.forClassWithGenerics(BeanGridValueProvider.class,
+				propertyType);
 
-		List<String> valueProviderNames = Arrays.asList(appContext.getBeanNamesForType(textualValueProviderType));
+		List<String> valueProviderNames = Arrays.asList(appContext.getBeanNamesForType(valueProviderType));
 
-		if (!valueProviderNames.isEmpty()) {
-			BeanGridValueProvider valueProviderInstance = appContext.getBean(valueProviderNames.iterator().next(),
-					BeanGridValueProvider.class);
-
-			return valueProviderInstance.provideValue(invokeRead(definition.getReadMethod(), item));
+		if (valueProviderNames.size() == 1) {
+			return appContext.getBean(valueProviderNames.iterator().next(), BeanGridValueProvider.class);
 		}
 
-		return "no-provider";
+		throw new ColumnDefinitionException("Could not find unique " + BeanGridValueProvider.class.getSimpleName()
+				+ " for type " + propertyType.getSimpleName());
 	}
 
 	@Override
