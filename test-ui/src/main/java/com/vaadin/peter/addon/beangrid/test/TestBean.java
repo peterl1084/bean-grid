@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
 
+import com.vaadin.peter.addon.beangrid.ColumnAlignment;
 import com.vaadin.peter.addon.beangrid.EditableColumn;
 import com.vaadin.peter.addon.beangrid.GridColumn;
 import com.vaadin.peter.addon.beangrid.summary.SummarizableColumn;
@@ -24,7 +25,7 @@ public class TestBean {
 	@SummarizableColumn
 	private BigDecimal bdValue;
 
-	@GridColumn(translationKey = "intPrimitiveValue", defaultOrder = 4)
+	@GridColumn(translationKey = "intPrimitiveValue", defaultOrder = 4, alignment = ColumnAlignment.RIGHT)
 	@EditableColumn
 	@SummarizableColumn
 	private int intValue;
@@ -34,7 +35,7 @@ public class TestBean {
 	@SummarizableColumn
 	private Integer integerObjectValue;
 
-	@GridColumn(translationKey = "doublePrimitiveValue", defaultOrder = 6)
+	@GridColumn(translationKey = "doublePrimitiveValue", defaultOrder = 6, alignment = ColumnAlignment.CENTER)
 	@EditableColumn
 	@SummarizableColumn
 	private double doubleValue;

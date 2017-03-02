@@ -22,6 +22,7 @@
 		<java.version>1.8</java.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.jar.plugin.version>3.0.2</maven.jar.plugin.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -30,6 +31,11 @@
 		<vaadin.version>8.0.0</vaadin.version>
 		<vaadin.spring.version>2.0.0</vaadin.spring.version>
 	</properties>
+
+	<modules>
+		<module>bean-grid-addon</module>
+		<module>test-ui</module>
+	</modules>
 
 	<repositories>
 		<repository>
@@ -79,9 +85,16 @@
 		</dependencies>
 	</dependencyManagement>
 
-	<modules>
-		<module>test-ui</module>
-		<module>bean-grid-addon</module>
-	</modules>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>${maven.jar.plugin.version}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
 </project>

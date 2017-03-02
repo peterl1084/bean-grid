@@ -91,6 +91,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 
 			grid.getEditor().addSaveListener(e -> refreshSummaryFooter(grid, columnDefinitions));
 			grid.getEditor().setBinder(new BeanValidationBinder<>(itemType));
+			grid.addStyleName("bean-grid");
 
 			if (ColumnDefinitionTools.isFooterRowRequired(columnDefinitions)) {
 				grid.appendFooterRow();
@@ -135,6 +136,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 			ListDataProvider<ITEM> dataProvider = ListDataProvider.class.cast(grid.getDataProvider());
 
 			FooterCell footerCell = grid.getFooterRow(0).getCell(definition.getPropertyName());
+			footerCell.setStyleName(definition.getColumnAlignment().getStyleName());
 			List<PROPERTY> propertyValues = (List<PROPERTY>) dataProvider.getItems().stream()
 					.map(item -> invokeRead(definition.getReadMethod(), item)).collect(Collectors.toList());
 

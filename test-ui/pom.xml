@@ -60,6 +60,26 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-maven-plugin</artifactId>
+				<version>${vaadin.version}</version>
+				<configuration>
+					<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+					<webappDirectory>${basedir}/src/main/resources/VAADIN/widgetsets</webappDirectory>
+					<draftCompile>true</draftCompile>
+					<style>detailed</style>
+					<strict>true</strict>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>resources</goal>
+							<!-- <goal>update-theme</goal> <goal>compile-theme</goal> -->
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<executions>

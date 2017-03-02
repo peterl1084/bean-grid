@@ -4,13 +4,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import com.vaadin.annotations.Theme;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+@Theme("test-theme")
 @SpringUI
 public class TestUI extends UI {
 

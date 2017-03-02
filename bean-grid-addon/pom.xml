@@ -34,6 +34,26 @@
 			<artifactId>logback-classic</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
+						<manifestEntries>
+							<Vaadin-Package-Version>1</Vaadin-Package-Version>
+							<Vaadin-Stylesheets>VAADIN/addon/bean-grid/bean-grid.scss</Vaadin-Stylesheets>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>
