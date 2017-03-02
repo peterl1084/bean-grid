@@ -2,6 +2,7 @@ package com.vaadin.peter.addon.beangrid;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -85,6 +86,12 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 				public void setDataProvider(DataProvider<ITEM, ?> dataProvider) {
 					super.setDataProvider(dataProvider);
 					dataProvider.addDataProviderListener(e -> refreshSummaryFooter(this, columnDefinitions));
+				}
+
+				@Override
+				public void setItems(Collection<ITEM> items) {
+					super.setItems(items);
+					refreshSummaryFooter(this, columnDefinitions);
 				}
 			};
 
