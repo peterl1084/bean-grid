@@ -43,12 +43,12 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 		primitiveMap = Collections.unmodifiableMap(primitives);
 	}
 
-	public ColumnDefinition(PropertyDescriptor descriptor, Annotation... extraDefinitions) {
+	public ColumnDefinition(PropertyDescriptor descriptor, Annotation... definitions) {
 		this.descriptor = Objects.requireNonNull(descriptor);
 
-		columnDefinitionAnnotation = assignAnnotation(GridColumn.class, extraDefinitions);
-		editorDefinition = assignAnnotation(EditableColumn.class, extraDefinitions);
-		summarizableDefinition = assignAnnotation(SummarizableColumn.class, extraDefinitions);
+		columnDefinitionAnnotation = assignAnnotation(GridColumn.class, definitions);
+		editorDefinition = assignAnnotation(EditableColumn.class, definitions);
+		summarizableDefinition = assignAnnotation(SummarizableColumn.class, definitions);
 
 		ifEditableAssertWritableOrThrow();
 	}
