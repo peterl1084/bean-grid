@@ -21,7 +21,7 @@ public class TestColumnDefinitions {
 
 	@Test
 	public void testColumnDefinitionLookup_simpleBeanWithMehtodDefinitions_definitionsFound() {
-		List<ColumnDefinition> columnDefinitions = ColumnDefinitionTools.discoverColumnDefinitions(SimpleBean.class);
+		List<ColumnDefinition> columnDefinitions = GridConfigurationTools.discoverColumnDefinitions(SimpleBean.class);
 		Assert.assertEquals(2, columnDefinitions.size());
 
 		Assert.assertEquals("first.name", columnDefinitions.get(0).getTranslationKey());
@@ -37,7 +37,7 @@ public class TestColumnDefinitions {
 
 	@Test
 	public void testColumnDefinitionLookup_simpleBeanExtendedFromBaseClassWithMehtodDefinitions_definitionsFound() {
-		List<ColumnDefinition> columnDefinitions = ColumnDefinitionTools
+		List<ColumnDefinition> columnDefinitions = GridConfigurationTools
 				.discoverColumnDefinitions(SimpleBeanWithBaseClass.class);
 		Assert.assertEquals(4, columnDefinitions.size());
 
@@ -64,7 +64,7 @@ public class TestColumnDefinitions {
 
 	@Test
 	public void testColumnDefinitionLookup_simpleBeanWithFieldDefinitions_definitionsFound() {
-		List<ColumnDefinition> columnDefinitions = ColumnDefinitionTools
+		List<ColumnDefinition> columnDefinitions = GridConfigurationTools
 				.discoverColumnDefinitions(SimpleBeanFieldDefinitions.class);
 		Assert.assertEquals(2, columnDefinitions.size());
 
@@ -82,7 +82,7 @@ public class TestColumnDefinitions {
 	@Test(expected = ColumnDefinitionException.class)
 	public void testColumnDefinitionLookup_simpleBeanWithDoubleDefinitions_definitionExceptionThrown() {
 		try {
-			ColumnDefinitionTools.discoverColumnDefinitions(BeanWithDoubleDefinitions.class);
+			GridConfigurationTools.discoverColumnDefinitions(BeanWithDoubleDefinitions.class);
 		} catch (ColumnDefinitionException e) {
 			logger.info("Expected error: " + e.getMessage());
 			throw e;
@@ -92,7 +92,7 @@ public class TestColumnDefinitions {
 	@Test(expected = ColumnDefinitionException.class)
 	public void testColumnDefinitionLookup_simpleBeanWithoutReadMethod_definitionExceptionThrown() {
 		try {
-			ColumnDefinitionTools.discoverColumnDefinitions(SimpleBeanWithoutReadMethod.class);
+			GridConfigurationTools.discoverColumnDefinitions(SimpleBeanWithoutReadMethod.class);
 		} catch (ColumnDefinitionException e) {
 			logger.info("Expected error: " + e.getMessage());
 			throw e;
@@ -102,7 +102,7 @@ public class TestColumnDefinitions {
 	@Test(expected = ColumnDefinitionException.class)
 	public void testColumnDefinitionLookup_simpleBeanWithoutReadMethodButWithWriteMethod_definitionExceptionThrown() {
 		try {
-			ColumnDefinitionTools.discoverColumnDefinitions(SimpleBeanWithOnlyWriteMethod.class);
+			GridConfigurationTools.discoverColumnDefinitions(SimpleBeanWithOnlyWriteMethod.class);
 		} catch (ColumnDefinitionException e) {
 			logger.info("Expected error: " + e.getMessage());
 			throw e;

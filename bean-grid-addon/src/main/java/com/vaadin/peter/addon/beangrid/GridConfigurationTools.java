@@ -16,14 +16,19 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.SelectionMode;
+
 /**
- * ColumnDefinitionTools is used to build {@link ColumnDefinition}s from any
- * bean having {@link GridColumn} annotations placed on fields or methods.
+ * GridConfigurationTools is used to build {@link ColumnDefinition}s from any
+ * bean having {@link GridColumn} annotations placed on fields or methods as
+ * well as to otherwise configure Vaadin {@link Grid} based on annotations
+ * defined on the item type used as the bean type of the Grid.
  * 
  * @author Peter / Vaadin
  */
-public class ColumnDefinitionTools {
-	private static Logger logger = LoggerFactory.getLogger(ColumnDefinitionTools.class);
+public class GridConfigurationTools {
+	private static Logger logger = LoggerFactory.getLogger(GridConfigurationTools.class);
 
 	/**
 	 * Finds {@link GridColumn} definitions from given itemType.
@@ -88,6 +93,27 @@ public class ColumnDefinitionTools {
 		}
 
 		return columnDefinitions.stream().filter(definition -> definition.isSummarizable()).findAny().isPresent();
+	}
+
+	/**
+	 * Finds the {@link SelectionMode} associated with the given itemType
+	 * through the {@link GridSelectionMode} annotation that may be placed on
+	 * ITEM type.
+	 * 
+	 * @param itemType
+	 * @return the {@link SelectionMode} configured to given itemType or
+	 *         {@link SelectionMode#NONE} if no mode annotation is specified.
+	 */
+	public static <ITEM> SelectionMode discoverSelectionMode(Class<ITEM> itemType) {
+		if (itemType == null) {
+			return null;
+		}
+
+		if (itemType.isAnnotationPresent(GridSelectionMode.class)) {
+			return itemType.getAnnotation(GridSelectionMode.class).value();
+		}
+
+		return SelectionMode.NONE;
 	}
 
 	static List<ColumnDefinition> discoverFieldsWithGridColumnAnnotations(Class<?> itemType,

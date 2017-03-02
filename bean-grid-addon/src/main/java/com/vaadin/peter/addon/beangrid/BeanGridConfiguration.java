@@ -30,7 +30,9 @@ import com.vaadin.peter.addon.beangrid.summary.Summarizer;
 import com.vaadin.peter.addon.beangrid.valueprovider.BeanGridValueProvider;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
+import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.components.grid.FooterCell;
+import com.vaadin.ui.components.grid.FooterRow;
 
 /**
  * BeanGridConfiguration defines Vaadin's Grid component as Spring Bean with
@@ -78,7 +80,8 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 	private <ITEM> Grid<ITEM> configureGridInstance(Class<ITEM> itemType) {
 		try {
 
-			List<ColumnDefinition> columnDefinitions = ColumnDefinitionTools.discoverColumnDefinitions(itemType);
+			List<ColumnDefinition> columnDefinitions = GridConfigurationTools.discoverColumnDefinitions(itemType);
+			SelectionMode selectionMode = GridConfigurationTools.discoverSelectionMode(itemType);
 
 			Grid<ITEM> grid = new Grid<ITEM>() {
 				@Override
@@ -89,12 +92,14 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 				}
 			};
 
+			grid.setSelectionMode(selectionMode);
 			grid.getEditor().addSaveListener(e -> refreshSummaryFooter(grid, columnDefinitions));
 			grid.getEditor().setBinder(new BeanValidationBinder<>(itemType));
 			grid.addStyleName("bean-grid");
 
-			if (ColumnDefinitionTools.isFooterRowRequired(columnDefinitions)) {
-				grid.appendFooterRow();
+			if (GridConfigurationTools.isFooterRowRequired(columnDefinitions)) {
+				FooterRow footer = grid.appendFooterRow();
+				System.out.println(footer);
 			}
 
 			columnDefinitions.forEach(definition -> {

@@ -10,9 +10,12 @@ import javax.validation.constraints.NotNull;
 import com.vaadin.peter.addon.beangrid.ColumnAlignment;
 import com.vaadin.peter.addon.beangrid.EditableColumn;
 import com.vaadin.peter.addon.beangrid.GridColumn;
+import com.vaadin.peter.addon.beangrid.GridSelectionMode;
 import com.vaadin.peter.addon.beangrid.summary.SummarizableColumn;
 import com.vaadin.peter.addon.beangrid.summary.SummarizableColumnStaticText;
+import com.vaadin.ui.Grid.SelectionMode;
 
+@GridSelectionMode(SelectionMode.MULTI)
 public class TestBean {
 
 	private String id;
