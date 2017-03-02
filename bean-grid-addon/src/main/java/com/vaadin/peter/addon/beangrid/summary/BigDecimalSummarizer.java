@@ -2,6 +2,7 @@ package com.vaadin.peter.addon.beangrid.summary;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Objects;
 
 import com.vaadin.spring.annotation.SpringComponent;
 
@@ -14,7 +15,7 @@ public class BigDecimalSummarizer implements Summarizer<BigDecimal> {
 			return BigDecimal.ZERO;
 		}
 
-		return allAvailableValues.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+		return allAvailableValues.stream().filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
 
 	@Override

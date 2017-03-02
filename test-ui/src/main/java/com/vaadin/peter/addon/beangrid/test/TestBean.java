@@ -26,18 +26,22 @@ public class TestBean {
 
 	@GridColumn(translationKey = "intPrimitiveValue", defaultOrder = 4)
 	@EditableColumn
+	@SummarizableColumn
 	private int intValue;
 
 	@GridColumn(translationKey = "integerObjectValue", defaultOrder = 5)
 	@EditableColumn
+	@SummarizableColumn
 	private Integer integerObjectValue;
 
 	@GridColumn(translationKey = "doublePrimitiveValue", defaultOrder = 6)
 	@EditableColumn
+	@SummarizableColumn
 	private double doubleValue;
 
 	@GridColumn(translationKey = "doubleObjectValue", defaultOrder = 7)
 	@EditableColumn
+	@SummarizableColumn
 	private Double doubleObjectValue;
 
 	@GridColumn(translationKey = "charPrimitiveValue", defaultOrder = 8)
