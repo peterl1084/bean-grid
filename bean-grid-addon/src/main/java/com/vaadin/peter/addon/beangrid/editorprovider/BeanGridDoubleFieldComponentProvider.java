@@ -1,17 +1,26 @@
 package com.vaadin.peter.addon.beangrid.editorprovider;
 
-import com.vaadin.data.converter.StringToDoubleConverter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
-import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.peter.addon.beangrid.converter.StringToDoubleBeanConverter;
 import com.vaadin.ui.TextField;
 
-@SpringComponent
+@Component
 public class BeanGridDoubleFieldComponentProvider
 		implements BeanGridValueConvertingEditorComponentProvider<String, Double> {
 
+	private StringToDoubleBeanConverter converter;
+
+	@Autowired
+	public BeanGridDoubleFieldComponentProvider(StringToDoubleBeanConverter converter) {
+		this.converter = converter;
+	}
+
 	@Override
-	public StringToDoubleConverter getConverter() {
-		return new StringToDoubleConverter("Failed converting value");
+	public StringToDoubleBeanConverter getConverter(ColumnDefinition definition) {
+		return converter.configureWithPattern(definition.getFormat().orElse(null));
 	}
 
 	@Override

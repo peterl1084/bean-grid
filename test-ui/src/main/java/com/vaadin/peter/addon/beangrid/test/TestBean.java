@@ -5,14 +5,14 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
-import javax.validation.constraints.NotNull;
-
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.peter.addon.beangrid.ColumnAlignment;
 import com.vaadin.peter.addon.beangrid.EditableColumn;
 import com.vaadin.peter.addon.beangrid.GridColumn;
 import com.vaadin.peter.addon.beangrid.GridSelectionMode;
 import com.vaadin.peter.addon.beangrid.summary.SummarizableColumn;
 import com.vaadin.peter.addon.beangrid.summary.SummarizableColumnStaticText;
+import com.vaadin.server.FontIcon;
 import com.vaadin.ui.Grid.SelectionMode;
 
 @GridSelectionMode(SelectionMode.MULTI)
@@ -24,45 +24,45 @@ public class TestBean {
 	private String lastName;
 	private LocalDate birthDate;
 
-	@GridColumn(translationKey = "bigDecimalValue", defaultOrder = 3)
-	@EditableColumn
-	@SummarizableColumn
+//	@GridColumn(translationKey = "bigDecimalValue", defaultOrder = 3, format = "000,000.0")
+//	@EditableColumn
+//	@SummarizableColumn
 	private BigDecimal bdValue;
 
-	@GridColumn(translationKey = "intPrimitiveValue", defaultOrder = 4, alignment = ColumnAlignment.RIGHT)
-	@EditableColumn
-	@SummarizableColumnStaticText(translationKey = "this.is.static.text")
+//	@GridColumn(translationKey = "intPrimitiveValue", defaultOrder = 4, alignment = ColumnAlignment.RIGHT)
+//	@EditableColumn
+//	@SummarizableColumnStaticText(translationKey = "this.is.static.text")
 	private int intValue;
 
-	@GridColumn(translationKey = "integerObjectValue", defaultOrder = 5)
-	@EditableColumn
-	@SummarizableColumn
+//	@GridColumn(translationKey = "integerObjectValue", defaultOrder = 5)
+//	@EditableColumn
+//	@SummarizableColumn
 	private Integer integerObjectValue;
 
-	@GridColumn(translationKey = "doublePrimitiveValue", defaultOrder = 6, alignment = ColumnAlignment.CENTER)
+	@GridColumn(translationKey = "doublePrimitiveValue", defaultOrder = 6, alignment = ColumnAlignment.RIGHT, format = "EUR 000,000.00")
 	@EditableColumn
 	@SummarizableColumn
 	private double doubleValue;
 
-	@GridColumn(translationKey = "doubleObjectValue", defaultOrder = 7)
-	@EditableColumn
-	@SummarizableColumn
+//	@GridColumn(translationKey = "doubleObjectValue", defaultOrder = 7)
+//	@EditableColumn
+//	@SummarizableColumn
 	private Double doubleObjectValue;
 
-	@GridColumn(translationKey = "charPrimitiveValue", defaultOrder = 8)
-	@EditableColumn
+//	@GridColumn(translationKey = "charPrimitiveValue", defaultOrder = 8)
+//	@EditableColumn
 	private char characterValue;
 
-	@GridColumn(translationKey = "booleanPrimitiveValue", defaultOrder = 9)
-	@EditableColumn
+//	@GridColumn(translationKey = "booleanPrimitiveValue", defaultOrder = 9)
+//	@EditableColumn
 	private boolean booleanValue;
 
-	@GridColumn(translationKey = "booleanObjectValue", defaultOrder = 10)
-	@EditableColumn
+//	@GridColumn(translationKey = "booleanObjectValue", defaultOrder = 10)
+//	@EditableColumn
 	private Boolean booleanObjectValue;
 
-	@GridColumn(translationKey = "dateObjectValue", defaultOrder = 11)
-	@EditableColumn
+//	@GridColumn(translationKey = "dateObjectValue", defaultOrder = 11)
+//	@EditableColumn
 	private Date dateObject;
 
 	public TestBean() {
@@ -77,13 +77,18 @@ public class TestBean {
 		this.birthDate = birthDate;
 	}
 
-	@GridColumn(translationKey = "firstName", defaultOrder = 1)
+//	@GridColumn(translationKey = "", defaultOrder = 0)
+	public FontIcon getIcon() {
+		return VaadinIcons.VAADIN_H;
+	}
+
+//	@GridColumn(translationKey = "firstName", defaultOrder = 1)
 	public String getFirstName() {
 		return firstName;
 	}
 
-	@GridColumn(translationKey = "lastName", defaultOrder = 2)
-	@EditableColumn
+//	@GridColumn(translationKey = "lastName", defaultOrder = 2)
+//	@EditableColumn
 	public String getLastName() {
 		return lastName;
 	}
@@ -92,9 +97,8 @@ public class TestBean {
 		this.lastName = lastName;
 	}
 
-	@GridColumn(translationKey = "birthDate", defaultOrder = 3)
-	@EditableColumn
-	@NotNull
+//	@GridColumn(translationKey = "birthDate", defaultOrder = 3, format = "MM-dd-yyyy")
+//	@EditableColumn
 	public LocalDate getBirthDate() {
 		return birthDate;
 	}
@@ -153,8 +157,6 @@ public class TestBean {
 		this.doubleValue = doubleValue;
 	}
 
-	@NotNull
-	@EditableColumn
 	public Double getDoubleObjectValue() {
 		return doubleObjectValue;
 	}

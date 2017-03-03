@@ -77,7 +77,7 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 	 *         primitives.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Class<?> getType() {
+	public Class<?> getPropertyType() {
 		Class propertyType = descriptor.getPropertyType();
 		return Optional.ofNullable(primitiveMap.get(propertyType)).orElse(propertyType);
 	}
@@ -206,6 +206,19 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 		}
 
 		return summarizableStaticDefinition.translationKey();
+	}
+
+	/**
+	 * @return Optional of format string that should be used for formatting the
+	 *         cell value. Most commonly used with number or date formats but
+	 *         can also be used to pad strings in textual fields etc.
+	 */
+	public Optional<String> getFormat() {
+		if (StringUtils.hasText(columnDefinitionAnnotation.format())) {
+			return Optional.of(columnDefinitionAnnotation.format());
+		}
+
+		return Optional.empty();
 	}
 
 	/**

@@ -2,8 +2,10 @@ package com.vaadin.peter.addon.beangrid.editorprovider;
 
 import java.math.BigInteger;
 
-import com.vaadin.data.converter.StringToBigIntegerConverter;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
+import com.vaadin.peter.addon.beangrid.converter.StringToBigIntegerBeanConverter;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.TextField;
 
@@ -11,9 +13,16 @@ import com.vaadin.ui.TextField;
 public class BeanGridBigIntegerFieldComponentProvider
 		implements BeanGridValueConvertingEditorComponentProvider<String, BigInteger> {
 
+	private StringToBigIntegerBeanConverter converter;
+
+	@Autowired
+	public BeanGridBigIntegerFieldComponentProvider(StringToBigIntegerBeanConverter converter) {
+		this.converter = converter;
+	}
+
 	@Override
-	public StringToBigIntegerConverter getConverter() {
-		return new StringToBigIntegerConverter("Failed converting value");
+	public StringToBigIntegerBeanConverter getConverter(ColumnDefinition definition) {
+		return converter.configureWithPattern(definition.getFormat().orElse(null));
 	}
 
 	@Override

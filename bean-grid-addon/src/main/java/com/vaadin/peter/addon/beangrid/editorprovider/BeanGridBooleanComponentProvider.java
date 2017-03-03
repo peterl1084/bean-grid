@@ -1,10 +1,11 @@
 package com.vaadin.peter.addon.beangrid.editorprovider;
 
+import org.springframework.stereotype.Component;
+
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
-import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.CheckBox;
 
-@SpringComponent
+@Component
 public class BeanGridBooleanComponentProvider implements BeanGridEditorComponentProvider<Boolean> {
 
 	@Override

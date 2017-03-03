@@ -5,22 +5,63 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.vaadin.peter.addon.beangrid.I18NProvider;
+import com.vaadin.data.Converter;
+import com.vaadin.data.Result;
+import com.vaadin.data.ValueContext;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.peter.addon.beangrid.ColumnDefinition;
+import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
+import com.vaadin.server.FontIcon;
+import com.vaadin.ui.renderers.HtmlRenderer;
 
+/**
+ * BeanGridBooleanValueProvider is capable of converting the Boolean property
+ * type to HTML String representation that can be visualised as font icon.
+ * 
+ * @author Peter / Vaadin
+ */
 @Component
-public class BeanGridBooleanValueProvider implements BeanGridValueProvider<Boolean> {
+public class BeanGridBooleanValueProvider implements BeanGridConvertingValueProvider<String, Boolean> {
 
-	@Autowired(required = false)
-	private I18NProvider i18NProvider;
+	private static final FontIcon TRUE_ICON = VaadinIcons.CHECK;
+	private static final FontIcon FALSE_ICON = VaadinIcons.CLOSE;
+
+	private GridConfigurationProvider configurationProvider;
+
+	@Autowired
+	public BeanGridBooleanValueProvider(GridConfigurationProvider configurationProvider) {
+		this.configurationProvider = configurationProvider;
+	}
 
 	@Override
-	public String provideValue(Boolean sourceValue) {
-		if (sourceValue == null) {
-			return null;
+	public HtmlRenderer getRenderer(ColumnDefinition definition) {
+		return new HtmlRenderer();
+	}
+
+	@Override
+	public BooleanToFontIconConverter getConverter() {
+		return new BooleanToFontIconConverter();
+	}
+
+	private class BooleanToFontIconConverter implements Converter<String, Boolean> {
+
+		@Override
+		public Result<Boolean> convertToModel(String value, ValueContext context) {
+			throw new UnsupportedOperationException("Conversion from HTML to Boolean not supported");
 		}
 
-		return Optional.ofNullable(i18NProvider)
-				.map(provider -> provider.provideTranslation(Boolean.toString(sourceValue)))
-				.orElse(Boolean.toString(sourceValue));
+		@Override
+		public String convertToPresentation(Boolean value, ValueContext context) {
+			if (value == null) {
+				return Optional.ofNullable(configurationProvider.getBooleanFalseFontIcon()).orElse(FALSE_ICON)
+						.getHtml();
+			} else {
+				return value
+						? Optional.ofNullable(configurationProvider.getBooleanTrueFontIcon()).orElse(TRUE_ICON)
+								.getHtml()
+						: Optional.ofNullable(configurationProvider.getBooleanFalseFontIcon()).orElse(FALSE_ICON)
+								.getHtml();
+			}
+		}
 	}
 }

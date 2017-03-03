@@ -25,14 +25,17 @@ import com.vaadin.data.Converter;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.peter.addon.beangrid.converter.ConfigurableConverter;
 import com.vaadin.peter.addon.beangrid.editorprovider.BeanGridEditorComponentProvider;
 import com.vaadin.peter.addon.beangrid.summary.Summarizer;
+import com.vaadin.peter.addon.beangrid.valueprovider.BeanGridDefaultValueProvider;
 import com.vaadin.peter.addon.beangrid.valueprovider.BeanGridValueProvider;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.components.grid.FooterCell;
 import com.vaadin.ui.components.grid.FooterRow;
+import com.vaadin.ui.renderers.AbstractRenderer;
 
 /**
  * BeanGridConfiguration defines Vaadin's Grid component as Spring Bean with
@@ -42,7 +45,7 @@ import com.vaadin.ui.components.grid.FooterRow;
  */
 @Configuration
 @ComponentScan(basePackageClasses = { BeanGridEditorComponentProvider.class, BeanGridValueProvider.class,
-		Summarizer.class })
+		Summarizer.class, ConfigurableConverter.class })
 public class BeanGridConfiguration implements ApplicationContextAware {
 
 	private ApplicationContext appContext;
@@ -50,7 +53,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 	private static Logger logger = LoggerFactory.getLogger(BeanGridConfiguration.class);
 
 	@Autowired(required = false)
-	private I18NProvider i18NProvider;
+	private GridConfigurationProvider gridConfigurationProvider;
 
 	@Bean
 	@Scope(scopeName = "prototype")
@@ -77,6 +80,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 		return grid;
 	}
 
+	@SuppressWarnings("unchecked")
 	private <ITEM> Grid<ITEM> configureGridInstance(Class<ITEM> itemType) {
 		try {
 
@@ -99,18 +103,22 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 
 			if (GridConfigurationTools.isFooterRowRequired(columnDefinitions)) {
 				FooterRow footer = grid.appendFooterRow();
-				System.out.println(footer);
 			}
 
 			columnDefinitions.forEach(definition -> {
-				Column<ITEM, Object> column = grid.addColumn(item -> provideColumnValue(definition, item));
+				BeanGridValueProvider<?> valueProviderInstance = findValueProvider(definition.getPropertyType());
+
+				Column<ITEM, Object> column = (Column<ITEM, Object>) grid.addColumn(
+						valueProviderInstance.getGetter(definition),
+						(AbstractRenderer<ITEM, Object>) valueProviderInstance.getRenderer(definition));
+
 				column.setId(definition.getPropertyName());
 				column.setStyleGenerator((item) -> {
 					return definition.getColumnAlignment().getStyleName();
 				});
 
-				if (i18NProvider != null) {
-					column.setCaption(i18NProvider.provideTranslation(definition.getTranslationKey()));
+				if (gridConfigurationProvider != null) {
+					column.setCaption(gridConfigurationProvider.resolveTranslationKey(definition.getTranslationKey()));
 				}
 
 				if (definition.isDefaultHidable()) {
@@ -124,7 +132,9 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 			});
 
 			return grid;
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			throw new RuntimeException("Failed to configure Vaadin Grid for type " + itemType.getCanonicalName(), e);
 		}
 	}
@@ -135,27 +145,27 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <ITEM, PROPERTY> void refreshColumnSummary(Grid<ITEM> grid, ColumnDefinition definition) {
+	private <ITEM, RENDERER_TYPE, PROPERTY_TYPE> void refreshColumnSummary(Grid<ITEM> grid,
+			ColumnDefinition definition) {
+		System.out.println("Refreshing summary of " + definition.getPropertyName());
 		FooterCell footerCell = grid.getFooterRow(0).getCell(definition.getPropertyName());
 		footerCell.setStyleName(definition.getColumnAlignment().getStyleName());
 
 		if (definition.isStaticTextSummarizable()) {
-			String translatedStaticText = i18NProvider
-					.provideTranslation(definition.getStaticTextSummarizerTranslationKey());
+			String translatedStaticText = gridConfigurationProvider
+					.resolveTranslationKey(definition.getStaticTextSummarizerTranslationKey());
 			footerCell.setText(translatedStaticText);
 		} else {
-			Summarizer<PROPERTY> summarizerFor = getSummarizerFor(definition);
+			Summarizer<PROPERTY_TYPE> summarizerFor = getSummarizerFor(definition);
 			if (ListDataProvider.class.isAssignableFrom(grid.getDataProvider().getClass())) {
 				ListDataProvider<ITEM> dataProvider = ListDataProvider.class.cast(grid.getDataProvider());
 
-				List<PROPERTY> propertyValues = (List<PROPERTY>) dataProvider.getItems().stream()
+				List<PROPERTY_TYPE> propertyValues = (List<PROPERTY_TYPE>) dataProvider.getItems().stream()
 						.map(item -> invokeRead(definition.getReadMethod(), item)).collect(Collectors.toList());
 
-				if (summarizerFor.canSummarize(propertyValues)) {
-					PROPERTY summaryValue = summarizerFor.getSummary(propertyValues);
-					BeanGridValueProvider<PROPERTY> cellValueProvider = (BeanGridValueProvider<PROPERTY>) findValueProvider(
-							definition.getType());
-					footerCell.setText(cellValueProvider.provideValue(summaryValue));
+				if (summarizerFor.canSummarize(definition, propertyValues)) {
+					String summaryText = summarizerFor.summarize(definition, propertyValues);
+					footerCell.setText(summaryText);
 				} else {
 					footerCell.setText("-");
 				}
@@ -171,16 +181,16 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 			summarizerType = definition.getSummarizerType();
 		} else {
 			ResolvableType resolvableSummarizerType = ResolvableType.forClassWithGenerics(Summarizer.class,
-					definition.getType());
+					definition.getPropertyType());
 			List<String> availableSummarizerBeanNames = Arrays
 					.asList(appContext.getBeanNamesForType(resolvableSummarizerType));
 
 			if (availableSummarizerBeanNames.isEmpty()) {
-				throw new ColumnDefinitionException(
-						"No summarizer available for property type " + definition.getType().getSimpleName() + ".");
+				throw new ColumnDefinitionException("No summarizer available for property type "
+						+ definition.getPropertyType().getSimpleName() + ".");
 			} else if (availableSummarizerBeanNames.size() > 1) {
 				throw new ColumnDefinitionException("There are more than one summarizer available for property type "
-						+ definition.getType().getSimpleName() + ": "
+						+ definition.getPropertyType().getSimpleName() + ": "
 						+ availableSummarizerBeanNames.stream().collect(Collectors.joining(", ")));
 			}
 
@@ -190,7 +200,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 
 		if (summarizerType == null) {
 			throw new ColumnDefinitionException("Could not determine type of the summarizer for column "
-					+ definition.getPropertyName() + " with type " + definition.getType().getSimpleName());
+					+ definition.getPropertyName() + " with type " + definition.getPropertyType().getSimpleName());
 		}
 
 		return appContext.getBean(summarizerBeanName, summarizerType);
@@ -208,19 +218,19 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 	protected <ITEM> void setupEditableColumn(Grid<ITEM> grid, ColumnDefinition definition,
 			Column<ITEM, Object> column) {
 		ResolvableType editorProviderType = ResolvableType.forClassWithGenerics(BeanGridEditorComponentProvider.class,
-				definition.getType());
+				definition.getPropertyType());
 
 		List<String> editorProviderNames = Arrays.asList(appContext.getBeanNamesForType(editorProviderType));
 
 		if (editorProviderNames.isEmpty()) {
 			throw new ColumnDefinitionException("Could not find editor component provider for "
-					+ definition.getType().getSimpleName() + ", please implement appropriate "
+					+ definition.getPropertyType().getSimpleName() + ", please implement appropriate "
 					+ BeanGridEditorComponentProvider.class.getSimpleName() + " as Spring bean.");
 		}
 
 		if (editorProviderNames.size() > 1) {
 			throw new ColumnDefinitionException(
-					"More than one component provider exists for " + definition.getType().getSimpleName() + ": "
+					"More than one component provider exists for " + definition.getPropertyType().getSimpleName() + ": "
 							+ editorProviderNames.stream().collect(Collectors.joining(", ")));
 		}
 
@@ -236,7 +246,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 
 		if (editorProvider.requiresConversion()) {
 			Converter<Object, Object> converter = (Converter<Object, Object>) editorProvider.asConvertable()
-					.getConverter();
+					.getConverter(definition);
 			bindingBuilder = bindingBuilder.withConverter(converter);
 		}
 
@@ -254,9 +264,9 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 		try {
 			if (value == null) {
 				if (columnDefinition.isPrimitiveTypeWriteMethod()) {
-					if (Boolean.class.equals(columnDefinition.getType())) {
+					if (Boolean.class.equals(columnDefinition.getPropertyType())) {
 						value = false;
-					} else if (Character.class.equals(columnDefinition.getType())) {
+					} else if (Character.class.equals(columnDefinition.getPropertyType())) {
 						value = Character.MIN_VALUE;
 					} else {
 						value = 0;
@@ -278,15 +288,10 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 		}
 	}
 
-	private <ITEM> String provideColumnValue(ColumnDefinition definition, ITEM item) {
-		BeanGridValueProvider<?> valueProviderInstance = findValueProvider(definition.getType());
-		return valueProviderInstance.provideValue(invokeRead(definition.getReadMethod(), item));
-	}
-
 	@SuppressWarnings("unchecked")
-	private <PROPERTY> BeanGridValueProvider<PROPERTY> findValueProvider(Class<PROPERTY> propertyType) {
+	private <PROPERTY_TYPE> BeanGridValueProvider<PROPERTY_TYPE> findValueProvider(Class<PROPERTY_TYPE> propertyType) {
 		if (Number.class.isAssignableFrom(propertyType)) {
-			propertyType = (Class<PROPERTY>) Number.class;
+			propertyType = (Class<PROPERTY_TYPE>) Number.class;
 		}
 
 		ResolvableType valueProviderType = ResolvableType.forClassWithGenerics(BeanGridValueProvider.class,
@@ -294,6 +299,9 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 
 		List<String> valueProviderNames = Arrays.asList(appContext.getBeanNamesForType(valueProviderType));
 
+		if (valueProviderNames.isEmpty()) {
+			return (BeanGridValueProvider<PROPERTY_TYPE>) appContext.getBean(BeanGridDefaultValueProvider.class);
+		}
 		if (valueProviderNames.size() == 1) {
 			return appContext.getBean(valueProviderNames.iterator().next(), BeanGridValueProvider.class);
 		}

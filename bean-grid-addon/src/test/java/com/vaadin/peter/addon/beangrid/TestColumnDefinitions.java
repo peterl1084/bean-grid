@@ -27,12 +27,12 @@ public class TestColumnDefinitions {
 		Assert.assertEquals("first.name", columnDefinitions.get(0).getTranslationKey());
 		Assert.assertEquals(0, columnDefinitions.get(0).getDefaultOrderNumber());
 		Assert.assertEquals("firstname", columnDefinitions.get(0).getPropertyName());
-		Assert.assertEquals(String.class, columnDefinitions.get(0).getType());
+		Assert.assertEquals(String.class, columnDefinitions.get(0).getPropertyType());
 
 		Assert.assertEquals("last.name", columnDefinitions.get(1).getTranslationKey());
 		Assert.assertEquals(1, columnDefinitions.get(1).getDefaultOrderNumber());
 		Assert.assertEquals("lastname", columnDefinitions.get(1).getPropertyName());
-		Assert.assertEquals(String.class, columnDefinitions.get(1).getType());
+		Assert.assertEquals(String.class, columnDefinitions.get(1).getPropertyType());
 	}
 
 	@Test
@@ -44,22 +44,22 @@ public class TestColumnDefinitions {
 		Assert.assertEquals("id", columnDefinitions.get(0).getTranslationKey());
 		Assert.assertEquals(0, columnDefinitions.get(0).getDefaultOrderNumber());
 		Assert.assertEquals("id", columnDefinitions.get(0).getPropertyName());
-		Assert.assertEquals(Integer.class, columnDefinitions.get(0).getType());
+		Assert.assertEquals(Integer.class, columnDefinitions.get(0).getPropertyType());
 
 		Assert.assertEquals("birth.date", columnDefinitions.get(1).getTranslationKey());
 		Assert.assertEquals(1, columnDefinitions.get(1).getDefaultOrderNumber());
 		Assert.assertEquals("birthDate", columnDefinitions.get(1).getPropertyName());
-		Assert.assertEquals(LocalDate.class, columnDefinitions.get(1).getType());
+		Assert.assertEquals(LocalDate.class, columnDefinitions.get(1).getPropertyType());
 
 		Assert.assertEquals("first.name", columnDefinitions.get(2).getTranslationKey());
 		Assert.assertEquals(2, columnDefinitions.get(2).getDefaultOrderNumber());
 		Assert.assertEquals("firstname", columnDefinitions.get(2).getPropertyName());
-		Assert.assertEquals(String.class, columnDefinitions.get(2).getType());
+		Assert.assertEquals(String.class, columnDefinitions.get(2).getPropertyType());
 
 		Assert.assertEquals("last.name", columnDefinitions.get(3).getTranslationKey());
 		Assert.assertEquals(3, columnDefinitions.get(3).getDefaultOrderNumber());
 		Assert.assertEquals("lastname", columnDefinitions.get(3).getPropertyName());
-		Assert.assertEquals(String.class, columnDefinitions.get(3).getType());
+		Assert.assertEquals(String.class, columnDefinitions.get(3).getPropertyType());
 	}
 
 	@Test
@@ -71,12 +71,12 @@ public class TestColumnDefinitions {
 		Assert.assertEquals("first.name", columnDefinitions.get(0).getTranslationKey());
 		Assert.assertEquals(0, columnDefinitions.get(0).getDefaultOrderNumber());
 		Assert.assertEquals("firstname", columnDefinitions.get(0).getPropertyName());
-		Assert.assertEquals(String.class, columnDefinitions.get(0).getType());
+		Assert.assertEquals(String.class, columnDefinitions.get(0).getPropertyType());
 
 		Assert.assertEquals("last.name", columnDefinitions.get(1).getTranslationKey());
 		Assert.assertEquals(1, columnDefinitions.get(1).getDefaultOrderNumber());
 		Assert.assertEquals("lastname", columnDefinitions.get(1).getPropertyName());
-		Assert.assertEquals(String.class, columnDefinitions.get(1).getType());
+		Assert.assertEquals(String.class, columnDefinitions.get(1).getPropertyType());
 	}
 
 	@Test(expected = ColumnDefinitionException.class)

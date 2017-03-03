@@ -1,11 +1,12 @@
 package com.vaadin.peter.addon.beangrid.editorprovider;
 
+import org.springframework.stereotype.Component;
+
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
 import com.vaadin.peter.addon.beangrid.converter.StringToCharacterConverter;
-import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.TextField;
 
-@SpringComponent
+@Component
 public class BeanGridCharacterComponentProvider
 		implements BeanGridValueConvertingEditorComponentProvider<String, Character> {
 
@@ -15,7 +16,7 @@ public class BeanGridCharacterComponentProvider
 	}
 
 	@Override
-	public StringToCharacterConverter getConverter() {
+	public StringToCharacterConverter getConverter(ColumnDefinition definition) {
 		return new StringToCharacterConverter();
 	}
 }

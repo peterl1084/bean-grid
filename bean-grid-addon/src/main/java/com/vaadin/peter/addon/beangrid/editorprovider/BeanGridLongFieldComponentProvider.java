@@ -1,7 +1,9 @@
 package com.vaadin.peter.addon.beangrid.editorprovider;
 
-import com.vaadin.data.converter.StringToLongConverter;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
+import com.vaadin.peter.addon.beangrid.converter.StringToLongBeanConverter;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.TextField;
 
@@ -9,9 +11,16 @@ import com.vaadin.ui.TextField;
 public class BeanGridLongFieldComponentProvider
 		implements BeanGridValueConvertingEditorComponentProvider<String, Long> {
 
+	private StringToLongBeanConverter converter;
+
+	@Autowired
+	public BeanGridLongFieldComponentProvider(StringToLongBeanConverter converter) {
+		this.converter = converter;
+	}
+
 	@Override
-	public StringToLongConverter getConverter() {
-		return new StringToLongConverter("Failed converting value");
+	public StringToLongBeanConverter getConverter(ColumnDefinition definition) {
+		return converter.configureWithPattern(definition.getFormat().orElse(null));
 	}
 
 	@Override

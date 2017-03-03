@@ -1,7 +1,9 @@
 package com.vaadin.peter.addon.beangrid.editorprovider;
 
-import com.vaadin.data.converter.StringToIntegerConverter;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
+import com.vaadin.peter.addon.beangrid.converter.StringToIntegerBeanConverter;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.TextField;
 
@@ -9,9 +11,16 @@ import com.vaadin.ui.TextField;
 public class BeanGridIntegerFieldComponentProvider
 		implements BeanGridValueConvertingEditorComponentProvider<String, Integer> {
 
+	private StringToIntegerBeanConverter converter;
+
+	@Autowired
+	public BeanGridIntegerFieldComponentProvider(StringToIntegerBeanConverter converter) {
+		this.converter = converter;
+	}
+
 	@Override
-	public StringToIntegerConverter getConverter() {
-		return new StringToIntegerConverter("Failed converting value");
+	public StringToIntegerBeanConverter getConverter(ColumnDefinition definition) {
+		return converter.configureWithPattern(definition.getFormat().orElse(null));
 	}
 
 	@Override
