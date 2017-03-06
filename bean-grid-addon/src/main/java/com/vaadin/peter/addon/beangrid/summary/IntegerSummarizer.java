@@ -3,33 +3,22 @@ package com.vaadin.peter.addon.beangrid.summary;
 import java.util.Collection;
 import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
-import com.vaadin.peter.addon.beangrid.converter.StringToIntegerBeanConverter;
 
 @Component
-@Scope(scopeName="prototype")
+@Scope(scopeName = "prototype")
 public class IntegerSummarizer extends AbstractSummarizer<Integer> {
 
-	private StringToIntegerBeanConverter converter;
-
-	@Autowired
-	public IntegerSummarizer(StringToIntegerBeanConverter converter) {
-		this.converter = converter;
+	public IntegerSummarizer() {
+		super(Integer.class);
 	}
 
 	@Override
 	public boolean canSummarize(ColumnDefinition definition, Collection<Integer> allAvailableValues) {
 		return true;
-	}
-
-	@Override
-	protected StringToIntegerConverter getStringConverter(ColumnDefinition definition) {
-		return converter.configureWithPattern(definition.getFormat().orElse(null));
 	}
 
 	@Override

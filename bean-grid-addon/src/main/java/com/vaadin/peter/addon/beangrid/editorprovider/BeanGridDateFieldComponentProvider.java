@@ -11,6 +11,14 @@ import com.vaadin.peter.addon.beangrid.ColumnDefinition;
 import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
 import com.vaadin.ui.DateField;
 
+/**
+ * BeanGridDateFieldComponentProvider is component provider capable of producing
+ * components and conversion between Date <-> LocalDate <-> Date types.
+ * 
+ * This bean is immutable and singleton safe.
+ * 
+ * @author Peter / Vaadin
+ */
 @Component
 public class BeanGridDateFieldComponentProvider
 		implements BeanGridValueConvertingEditorComponentProvider<LocalDate, Date> {
@@ -23,7 +31,7 @@ public class BeanGridDateFieldComponentProvider
 	}
 
 	@Override
-	public LocalDateToDateConverter getConverter(ColumnDefinition definition) {
+	public LocalDateToDateConverter getConverter() {
 		return new LocalDateToDateConverter(configurationProvider.getTimeZoneId());
 	}
 

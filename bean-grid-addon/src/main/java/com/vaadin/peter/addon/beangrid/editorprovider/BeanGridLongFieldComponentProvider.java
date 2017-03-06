@@ -1,26 +1,27 @@
 package com.vaadin.peter.addon.beangrid.editorprovider;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
-import com.vaadin.peter.addon.beangrid.converter.StringToLongBeanConverter;
-import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.TextField;
 
-@SpringComponent
+/**
+ * BeanGridBigDecimalFieldComponentProvider is component provider capable of
+ * Long <-> String <-> Long conversion. As this bean implements
+ * {@link ConfigurableBeanGridValueConvertingEditorComponentProvider} it's NOT
+ * immutable and hence not singleton safe and should always be declared as
+ * prototype scoped.
+ * 
+ * @author Peter / Vaadin
+ */
+@Component
+@Scope(scopeName = "prototype")
 public class BeanGridLongFieldComponentProvider
-		implements BeanGridValueConvertingEditorComponentProvider<String, Long> {
+		extends AbstractGridValueConfigurableConvertingEditorComponentProvider<Long> {
 
-	private StringToLongBeanConverter converter;
-
-	@Autowired
-	public BeanGridLongFieldComponentProvider(StringToLongBeanConverter converter) {
-		this.converter = converter;
-	}
-
-	@Override
-	public StringToLongBeanConverter getConverter(ColumnDefinition definition) {
-		return converter.configureWithPattern(definition.getFormat().orElse(null));
+	public BeanGridLongFieldComponentProvider() {
+		super(Long.class);
 	}
 
 	@Override

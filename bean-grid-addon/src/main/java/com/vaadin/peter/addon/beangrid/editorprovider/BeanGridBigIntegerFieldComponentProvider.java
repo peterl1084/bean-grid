@@ -2,27 +2,28 @@ package com.vaadin.peter.addon.beangrid.editorprovider;
 
 import java.math.BigInteger;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
-import com.vaadin.peter.addon.beangrid.converter.StringToBigIntegerBeanConverter;
-import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.TextField;
 
-@SpringComponent
+/**
+ * BeanGridBigDecimalFieldComponentProvider is component provider capable of
+ * BigInteger <-> String <-> BigInteger conversion. As this bean implements
+ * {@link ConfigurableBeanGridValueConvertingEditorComponentProvider} it's NOT
+ * immutable and hence not singleton safe and should always be declared as
+ * prototype scoped.
+ * 
+ * @author Peter / Vaadin
+ */
+@Component
+@Scope(scopeName = "prototype")
 public class BeanGridBigIntegerFieldComponentProvider
-		implements BeanGridValueConvertingEditorComponentProvider<String, BigInteger> {
+		extends AbstractGridValueConfigurableConvertingEditorComponentProvider<BigInteger> {
 
-	private StringToBigIntegerBeanConverter converter;
-
-	@Autowired
-	public BeanGridBigIntegerFieldComponentProvider(StringToBigIntegerBeanConverter converter) {
-		this.converter = converter;
-	}
-
-	@Override
-	public StringToBigIntegerBeanConverter getConverter(ColumnDefinition definition) {
-		return converter.configureWithPattern(definition.getFormat().orElse(null));
+	public BeanGridBigIntegerFieldComponentProvider() {
+		super(BigInteger.class);
 	}
 
 	@Override

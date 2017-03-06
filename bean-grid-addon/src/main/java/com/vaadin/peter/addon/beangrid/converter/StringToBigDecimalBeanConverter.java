@@ -1,5 +1,6 @@
 package com.vaadin.peter.addon.beangrid.converter;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -8,15 +9,15 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.vaadin.data.converter.StringToBigDecimalConverter;
 import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
 
 @Component
-@Scope(scopeName = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class StringToBigDecimalBeanConverter extends StringToBigDecimalConverter implements ConfigurableConverter {
+@Scope(scopeName = "prototype")
+public class StringToBigDecimalBeanConverter extends StringToBigDecimalConverter
+		implements ConfigurableConverter<BigDecimal> {
 
 	private String pattern;
 	private GridConfigurationProvider configurationProvider;
@@ -42,9 +43,8 @@ public class StringToBigDecimalBeanConverter extends StringToBigDecimalConverter
 	}
 
 	@Override
-	public StringToBigDecimalBeanConverter configureWithPattern(String pattern) {
+	public void configureWithPattern(String pattern) {
 		System.out.println("Configuring " + this + " with pattern " + pattern);
 		this.pattern = pattern;
-		return this;
 	}
 }

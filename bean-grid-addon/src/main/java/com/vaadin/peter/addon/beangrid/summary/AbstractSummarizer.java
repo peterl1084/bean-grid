@@ -1,20 +1,41 @@
 package com.vaadin.peter.addon.beangrid.summary;
 
+import java.util.Arrays;
 import java.util.Collection;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.PostConstruct;
 
-import com.vaadin.data.Converter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.ResolvableType;
+
 import com.vaadin.data.ValueContext;
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
 import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
+import com.vaadin.peter.addon.beangrid.converter.ConfigurableConverter;
 
-public abstract class AbstractSummarizer<BEAN_FIELD_TYPE> implements Summarizer<BEAN_FIELD_TYPE> {
+public abstract class AbstractSummarizer<PROPERTY_TYPE> implements Summarizer<PROPERTY_TYPE> {
 
 	private GridConfigurationProvider configurationProvider;
 
-	public AbstractSummarizer() {
+	@Autowired
+	private ApplicationContext appContext;
+
+	private Class<PROPERTY_TYPE> propertyType;
+
+	private ConfigurableConverter<PROPERTY_TYPE> converter;
+
+	public AbstractSummarizer(Class<PROPERTY_TYPE> propertyType) {
+		this.propertyType = propertyType;
 		System.out.println("Instantiating: " + getClass().getSimpleName() + " " + this);
+	}
+
+	@PostConstruct
+	protected void initialize() {
+		ResolvableType converterResolvable = ResolvableType.forClassWithGenerics(ConfigurableConverter.class,
+				propertyType);
+		String converterBeanName = Arrays.asList(appContext.getBeanNamesForType(converterResolvable)).iterator().next();
+		converter = appContext.getBean(converterBeanName, ConfigurableConverter.class);
 	}
 
 	@Autowired
@@ -23,14 +44,12 @@ public abstract class AbstractSummarizer<BEAN_FIELD_TYPE> implements Summarizer<
 	}
 
 	@Override
-	public String summarize(ColumnDefinition definition, Collection<BEAN_FIELD_TYPE> allAvailableValues) {
-		BEAN_FIELD_TYPE summaryValue = doSummarize(definition, allAvailableValues);
-		return getStringConverter(definition).convertToPresentation(summaryValue,
-				new ValueContext(configurationProvider.getLocale()));
+	public String summarize(ColumnDefinition definition, Collection<PROPERTY_TYPE> allAvailableValues) {
+		PROPERTY_TYPE summaryValue = doSummarize(definition, allAvailableValues);
+		converter.configureWithPattern(definition.getFormat().orElse(null));
+		return converter.convertToPresentation(summaryValue, new ValueContext(configurationProvider.getLocale()));
 	}
 
-	protected abstract Converter<String, BEAN_FIELD_TYPE> getStringConverter(ColumnDefinition definition);
-
-	protected abstract BEAN_FIELD_TYPE doSummarize(ColumnDefinition definition,
-			Collection<BEAN_FIELD_TYPE> allAvailableValues);
+	protected abstract PROPERTY_TYPE doSummarize(ColumnDefinition definition,
+			Collection<PROPERTY_TYPE> allAvailableValues);
 }

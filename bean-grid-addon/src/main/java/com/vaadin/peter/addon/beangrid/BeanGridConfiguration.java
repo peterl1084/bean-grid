@@ -27,6 +27,7 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.peter.addon.beangrid.converter.ConfigurableConverter;
 import com.vaadin.peter.addon.beangrid.editorprovider.BeanGridEditorComponentProvider;
+import com.vaadin.peter.addon.beangrid.editorprovider.ConfigurableBeanGridValueConvertingEditorComponentProvider;
 import com.vaadin.peter.addon.beangrid.summary.Summarizer;
 import com.vaadin.peter.addon.beangrid.valueprovider.BeanGridDefaultValueProvider;
 import com.vaadin.peter.addon.beangrid.valueprovider.BeanGridValueProvider;
@@ -173,6 +174,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected <TYPE> Summarizer<TYPE> getSummarizerFor(ColumnDefinition definition) {
 		Class<? extends Summarizer<TYPE>> summarizerType = null;
 		String summarizerBeanName = null;
@@ -214,7 +216,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 	 * @param column
 	 */
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected <ITEM> void setupEditableColumn(Grid<ITEM> grid, ColumnDefinition definition,
 			Column<ITEM, Object> column) {
 		ResolvableType editorProviderType = ResolvableType.forClassWithGenerics(BeanGridEditorComponentProvider.class,
@@ -244,9 +246,14 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 
 		bindingBuilder = bindingBuilder.withNullRepresentation(editorComponent.getEmptyValue());
 
+		if (editorProvider instanceof ConfigurableBeanGridValueConvertingEditorComponentProvider) {
+			ConfigurableBeanGridValueConvertingEditorComponentProvider configurableEditorProvider = (ConfigurableBeanGridValueConvertingEditorComponentProvider) editorProvider;
+			configurableEditorProvider.configureConverter(definition);
+		}
+
 		if (editorProvider.requiresConversion()) {
 			Converter<Object, Object> converter = (Converter<Object, Object>) editorProvider.asConvertable()
-					.getConverter(definition);
+					.getConverter();
 			bindingBuilder = bindingBuilder.withConverter(converter);
 		}
 

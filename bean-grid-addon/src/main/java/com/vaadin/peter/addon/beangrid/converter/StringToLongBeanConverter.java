@@ -8,15 +8,14 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.vaadin.data.converter.StringToLongConverter;
 import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
 
 @Component
-@Scope(scopeName = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class StringToLongBeanConverter extends StringToLongConverter implements ConfigurableConverter {
+@Scope(scopeName = "prototype")
+public class StringToLongBeanConverter extends StringToLongConverter implements ConfigurableConverter<Long> {
 
 	private String pattern;
 	private GridConfigurationProvider configurationProvider;
@@ -42,9 +41,8 @@ public class StringToLongBeanConverter extends StringToLongConverter implements 
 	}
 
 	@Override
-	public StringToLongBeanConverter configureWithPattern(String pattern) {
+	public void configureWithPattern(String pattern) {
 		System.out.println("Configuring " + this + " with pattern " + pattern);
 		this.pattern = pattern;
-		return this;
 	}
 }

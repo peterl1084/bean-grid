@@ -3,13 +3,13 @@ package com.vaadin.peter.addon.beangrid.editorprovider;
 import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
 import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
-import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.DateField;
 
-@SpringComponent
+@Component
 public class BeanGridLocalDateComponentProvider implements BeanGridEditorComponentProvider<LocalDate> {
 
 	private GridConfigurationProvider configurationProvider;
