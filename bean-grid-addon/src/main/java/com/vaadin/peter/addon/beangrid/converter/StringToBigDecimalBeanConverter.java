@@ -44,7 +44,6 @@ public class StringToBigDecimalBeanConverter extends StringToBigDecimalConverter
 
 	@Override
 	public void configureWithPattern(String pattern) {
-		System.out.println("Configuring " + this + " with pattern " + pattern);
 		this.pattern = pattern;
 	}
 }

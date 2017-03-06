@@ -6,7 +6,7 @@ import com.vaadin.ui.renderers.Renderer;
 
 /**
  * BeanGridConvertingValueProvider is {@link BeanGridValueProvider} with added
- * ability to convert the value from BEAN_FIELD_TYPE to RENDERER_TYPE. This is
+ * ability to convert the value from FIELD_TYPE to RENDERER_TYPE. This is
  * particularly useful in situations where a specific type of renderer is
  * required and the type of the property value doesn't quite match the required
  * renderer value. This special type of provider defines a Vaadin

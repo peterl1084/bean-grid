@@ -6,24 +6,24 @@ import com.vaadin.peter.addon.beangrid.ColumnDefinition;
 
 /**
  * Summarizer is top level interface for all Summarizers that work with specific
- * BEAN_FIELD_TYPEs. The implementations should be exposed as Spring Beans and
- * their BEAN_FIELD_TYPE is used as qualifier for picking the right type of
+ * PROPERTY_TYPE. The implementations should be exposed as Spring Beans and
+ * their PROPERTY_TYPE is used as qualifier for picking the right type of
  * summarizer automatically if it's unspecified in the
  * {@link SummarizableColumn} definition.
  * 
  * @author Peter / Vaadin
  *
- * @param <BEAN_FIELD_TYPE>
+ * @param <PROPERTY_TYPE>
  *            type of the property for which the summary is calculated.
  */
-public interface Summarizer<BEAN_FIELD_TYPE> {
+public interface Summarizer<PROPERTY_TYPE> {
 
 	/**
 	 * @param allAvailableValues
 	 * @return calculated summary of given collection of items to be summarized.
 	 *         Generally this is sum of allAvailableValues.
 	 */
-	String summarize(ColumnDefinition definition, Collection<BEAN_FIELD_TYPE> allAvailableValues);
+	String summarize(ColumnDefinition definition, Collection<PROPERTY_TYPE> allAvailableValues);
 
 	/**
 	 * Tests if this summarizer is capable of summarizing the given values. It
@@ -34,7 +34,7 @@ public interface Summarizer<BEAN_FIELD_TYPE> {
 	 * @return true if this summarizer can determine a sum of
 	 *         allAvailableValues, false otherwise.
 	 */
-	boolean canSummarize(ColumnDefinition definition, Collection<BEAN_FIELD_TYPE> allAvailableValues);
+	boolean canSummarize(ColumnDefinition definition, Collection<PROPERTY_TYPE> allAvailableValues);
 
 	/**
 	 * DefaultNoOpSummarizer is hidden internal default value for

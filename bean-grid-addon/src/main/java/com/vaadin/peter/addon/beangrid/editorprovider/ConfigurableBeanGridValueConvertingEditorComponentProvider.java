@@ -14,8 +14,8 @@ import com.vaadin.peter.addon.beangrid.ColumnDefinition;
  *            type of the property for which the converter can be configured.
  */
 
-public interface ConfigurableBeanGridValueConvertingEditorComponentProvider<FIELD_TYPE, BEAN_PROPERTY_TYPE>
-		extends BeanGridValueConvertingEditorComponentProvider<FIELD_TYPE, BEAN_PROPERTY_TYPE> {
+public interface ConfigurableBeanGridValueConvertingEditorComponentProvider<FIELD_TYPE, PROPERTY_TYPE>
+		extends BeanGridValueConvertingEditorComponentProvider<FIELD_TYPE, PROPERTY_TYPE> {
 
 	/**
 	 * Configures this component provider's converter with given

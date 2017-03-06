@@ -42,7 +42,6 @@ public class StringToDoubleBeanConverter extends StringToDoubleConverter impleme
 
 	@Override
 	public void configureWithPattern(String pattern) {
-		System.out.println("Configuring " + this + " with pattern " + pattern);
 		this.pattern = pattern;
 	}
 }

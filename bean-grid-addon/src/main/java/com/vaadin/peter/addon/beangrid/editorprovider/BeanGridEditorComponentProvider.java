@@ -14,7 +14,7 @@ import com.vaadin.ui.Grid;
  * The implementations of BeanGridEditorComponentProvider are looked for as
  * Spring Beans, hence they need to be enabled as such by declaring them
  * as @Components or @SpringComponents. The generic type resolution is resolved
- * based on BEAN_PROPERTY_TYPE. This means that for each property type there
+ * based on PROPERTY_TYPE. This means that for each property type there
  * should be single BeanGridEditorComponentProvider bean that is capable of
  * building Vaadin component that is intended to be used with that type.
  * 
@@ -27,15 +27,15 @@ import com.vaadin.ui.Grid;
  * 
  * @author Peter / Vaadin
  *
- * @param <BEAN_PROPERTY_TYPE>
+ * @param <PROPERTY_TYPE>
  *            type of the property in the item that represents the grid row.
  */
-public interface BeanGridEditorComponentProvider<BEAN_PROPERTY_TYPE> {
+public interface BeanGridEditorComponentProvider<PROPERTY_TYPE> {
 
 	/**
-	 * Provides a component that should be used with BEAN_PROPERTY_TYPE. If the
-	 * component's {@link HasValue} type is different from BEAN_PROPERTY_TYPE
-	 * this component provider bean should implement
+	 * Provides a component that should be used with PROPERTY_TYPE. If the
+	 * component's {@link HasValue} type is different from PROPERTY_TYPE this
+	 * component provider bean should implement
 	 * {@link BeanGridValueConvertingEditorComponentProvider} instead.
 	 * 
 	 * @param columnDefinition

@@ -35,7 +35,6 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.components.grid.FooterCell;
-import com.vaadin.ui.components.grid.FooterRow;
 import com.vaadin.ui.renderers.AbstractRenderer;
 
 /**
@@ -103,7 +102,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 			grid.addStyleName("bean-grid");
 
 			if (GridConfigurationTools.isFooterRowRequired(columnDefinitions)) {
-				FooterRow footer = grid.appendFooterRow();
+				grid.appendFooterRow();
 			}
 
 			columnDefinitions.forEach(definition -> {
@@ -148,7 +147,6 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 	@SuppressWarnings("unchecked")
 	private <ITEM, RENDERER_TYPE, PROPERTY_TYPE> void refreshColumnSummary(Grid<ITEM> grid,
 			ColumnDefinition definition) {
-		System.out.println("Refreshing summary of " + definition.getPropertyName());
 		FooterCell footerCell = grid.getFooterRow(0).getCell(definition.getPropertyName());
 		footerCell.setStyleName(definition.getColumnAlignment().getStyleName());
 
