@@ -7,7 +7,8 @@ import com.vaadin.ui.renderers.TextRenderer;
 
 /**
  * BeanGridDefaultValueProvider usable with all types of Objects. The rendering
- * relies on toString method of the object.
+ * relies on toString method of the object and uses default {@link TextRenderer}
+ * for showing the value in Grid.
  * 
  * @author Peter / Vaadin
  */

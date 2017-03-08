@@ -1,6 +1,7 @@
 package com.vaadin.peter.addon.beangrid.converter;
 
 import com.vaadin.data.Converter;
+import com.vaadin.peter.addon.beangrid.PrototypeConverter;
 
 /**
  * ConfigurableConverter allows specifying a pattern that should be used with
@@ -11,6 +12,7 @@ import com.vaadin.data.Converter;
  * 
  * @author Peter / Vaadin
  */
+@PrototypeConverter
 public interface ConfigurableConverter<PROPERTY_TYPE> extends Converter<String, PROPERTY_TYPE> {
 
 	/**

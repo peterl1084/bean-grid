@@ -7,14 +7,21 @@ import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import com.vaadin.data.converter.StringToLongConverter;
+import com.vaadin.peter.addon.beangrid.GridColumn;
 import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
+import com.vaadin.peter.addon.beangrid.PrototypeConverter;
 
-@Component
-@Scope(scopeName = "prototype")
+/**
+ * StringToLongBeanConverter is StringToLongConverter bean that allows external
+ * configuration through {@link GridConfigurationProvider} as well as through
+ * {@link GridColumn#format()}. Due to configurability this converter is mutable
+ * and is NOT singleton safe.
+ * 
+ * @author Peter / Vaadin
+ */
+@PrototypeConverter
 public class StringToLongBeanConverter extends StringToLongConverter implements ConfigurableConverter<Long> {
 
 	private String pattern;

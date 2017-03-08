@@ -11,7 +11,8 @@ import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
 import com.vaadin.ui.renderers.DateRenderer;
 
 /**
- * BeanGridDateValueProvider
+ * BeanGridDateValueProvider is {@link BeanGridValueProvider} compatible with
+ * {@link Date} types. This provider is singleton and singleton safe.
  * 
  * @author Peter / Vaadin
  */

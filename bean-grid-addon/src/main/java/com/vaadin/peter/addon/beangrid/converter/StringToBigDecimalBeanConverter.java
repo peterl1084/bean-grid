@@ -8,14 +8,21 @@ import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import com.vaadin.data.converter.StringToBigDecimalConverter;
+import com.vaadin.peter.addon.beangrid.GridColumn;
 import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
+import com.vaadin.peter.addon.beangrid.PrototypeConverter;
 
-@Component
-@Scope(scopeName = "prototype")
+/**
+ * StringToBigDecimalBeanConverter is StringToBigDecimalConverter bean that
+ * allows external configuration through {@link GridConfigurationProvider} as
+ * well as through {@link GridColumn#format()}. Due to configurability this
+ * converter is mutable and is NOT singleton safe.
+ * 
+ * @author Peter / Vaadin
+ */
+@PrototypeConverter
 public class StringToBigDecimalBeanConverter extends StringToBigDecimalConverter
 		implements ConfigurableConverter<BigDecimal> {
 
