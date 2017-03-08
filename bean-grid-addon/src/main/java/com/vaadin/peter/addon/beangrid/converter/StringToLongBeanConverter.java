@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.data.converter.StringToLongConverter;
 import com.vaadin.peter.addon.beangrid.GridColumn;
 import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
-import com.vaadin.peter.addon.beangrid.PrototypeConverter;
 
 /**
  * StringToLongBeanConverter is StringToLongConverter bean that allows external

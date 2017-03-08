@@ -3,7 +3,6 @@ package com.vaadin.peter.addon.beangrid.converter;
 import com.vaadin.data.Converter;
 import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
-import com.vaadin.peter.addon.beangrid.SingletonConverter;
 import com.vaadin.server.FontIcon;
 import com.vaadin.ui.renderers.HtmlRenderer;
 

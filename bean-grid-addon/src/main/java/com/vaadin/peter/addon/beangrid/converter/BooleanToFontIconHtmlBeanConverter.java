@@ -9,7 +9,6 @@ import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
-import com.vaadin.peter.addon.beangrid.SingletonConverter;
 import com.vaadin.server.FontIcon;
 import com.vaadin.ui.renderers.HtmlRenderer;
 

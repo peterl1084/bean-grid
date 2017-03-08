@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.data.converter.StringToDoubleConverter;
 import com.vaadin.peter.addon.beangrid.GridColumn;
 import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
-import com.vaadin.peter.addon.beangrid.PrototypeConverter;
 
 /**
  * StringToDoubleBeanConverter is StringToDoubleConverter bean that allows

@@ -1,4 +1,4 @@
-package com.vaadin.peter.addon.beangrid;
+package com.vaadin.peter.addon.beangrid.converter;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

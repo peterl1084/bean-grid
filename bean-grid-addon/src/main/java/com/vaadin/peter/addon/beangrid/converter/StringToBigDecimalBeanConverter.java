@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.data.converter.StringToBigDecimalConverter;
 import com.vaadin.peter.addon.beangrid.GridColumn;
 import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
-import com.vaadin.peter.addon.beangrid.PrototypeConverter;
 
 /**
  * StringToBigDecimalBeanConverter is StringToBigDecimalConverter bean that

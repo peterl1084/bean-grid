@@ -5,7 +5,6 @@ import org.springframework.util.StringUtils;
 import com.vaadin.data.Converter;
 import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
-import com.vaadin.peter.addon.beangrid.SingletonConverter;
 
 /**
  * StringToCharacterBeanConverter is {@link Converter} between String <->
