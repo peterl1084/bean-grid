@@ -14,7 +14,7 @@ import com.vaadin.ui.renderers.HtmlRenderer;
  * @author Peter / Vaadin
  */
 @SingletonConverter
-public class FontIconToHtmlBeanConverter implements Converter<String, FontIcon> {
+public class FontIconToHtmlBeanConverter implements ConverterBean<String, FontIcon> {
 
 	@Override
 	public Result<FontIcon> convertToModel(String value, ValueContext context) {

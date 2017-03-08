@@ -13,7 +13,7 @@ import com.vaadin.data.ValueContext;
  * @author Peter / Vaadin
  */
 @SingletonConverter
-public class StringToCharacterBeanConverter implements Converter<String, Character> {
+public class StringToCharacterBeanConverter implements ConverterBean<String, Character> {
 
 	@Override
 	public Result<Character> convertToModel(String value, ValueContext context) {

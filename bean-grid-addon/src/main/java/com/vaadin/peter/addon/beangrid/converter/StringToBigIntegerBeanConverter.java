@@ -1,15 +1,14 @@
 package com.vaadin.peter.addon.beangrid.converter;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.util.Locale;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.vaadin.data.converter.StringToBigIntegerConverter;
+import com.vaadin.data.Result;
+import com.vaadin.data.ValueContext;
 import com.vaadin.peter.addon.beangrid.GridColumn;
 import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
 
@@ -21,35 +20,38 @@ import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
  * 
  * @author Peter / Vaadin
  */
-@PrototypeConverter
-public class StringToBigIntegerBeanConverter extends StringToBigIntegerConverter
-		implements ConfigurableConverter<BigInteger> {
-
-	private String pattern;
-	private GridConfigurationProvider configurationProvider;
+@SingletonConverter
+public class StringToBigIntegerBeanConverter extends AbstractStringToNumberConverterBean<BigInteger> {
 
 	@Autowired
 	public StringToBigIntegerBeanConverter(GridConfigurationProvider configurationProvider) {
-		super(configurationProvider.getConversionErrorString());
-		this.configurationProvider = configurationProvider;
+		super(configurationProvider);
 	}
 
 	@Override
-	protected NumberFormat getFormat(Locale locale) {
-		String selectedPattern = Optional.ofNullable(pattern)
-				.orElse(configurationProvider.getNumberFormatPattern().orElse(null));
+	protected NumberFormat getFormat(ValueContext context) {
+		NumberFormat format = super.getFormat(context);
 
-		if (selectedPattern == null) {
-			return super.getFormat(locale);
+		if (format instanceof DecimalFormat) {
+			((DecimalFormat) format).setParseBigDecimal(true);
 		}
 
-		DecimalFormat decimalFormat = new DecimalFormat(selectedPattern, new DecimalFormatSymbols(locale));
-		decimalFormat.setParseBigDecimal(true);
-		return decimalFormat;
+		return format;
 	}
 
 	@Override
-	public void configureWithPattern(String pattern) {
-		this.pattern = pattern;
+	public Result<BigInteger> convertToModel(String value, ValueContext context) {
+
+		return convertToNumber(value, context).map(number -> {
+			if (number == null) {
+				return null;
+			} else {
+				// Empty value will be a BigInteger
+				if (number instanceof BigInteger) {
+					return (BigInteger) number;
+				}
+				return ((BigDecimal) number).toBigInteger();
+			}
+		});
 	}
 }

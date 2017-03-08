@@ -1,6 +1,5 @@
 package com.vaadin.peter.addon.beangrid.editorprovider;
 
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
@@ -16,9 +15,7 @@ import com.vaadin.ui.TextField;
  * @author Peter / Vaadin
  */
 @Component
-@Scope(scopeName = "prototype")
-public class BeanGridIntegerFieldComponentProvider
-		extends AbstractGridValueConfigurableConvertingEditorComponentProvider<Integer> {
+public class BeanGridIntegerFieldComponentProvider extends AbstractGridNumberValueEditorComponentProvider<Integer> {
 
 	public BeanGridIntegerFieldComponentProvider() {
 		super(Integer.class);

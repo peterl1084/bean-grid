@@ -6,9 +6,9 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.vaadin.data.converter.LocalDateToDateConverter;
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
 import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
+import com.vaadin.peter.addon.beangrid.converter.LocalDateToDateConverterBean;
 import com.vaadin.ui.DateField;
 
 /**
@@ -26,13 +26,16 @@ public class BeanGridDateFieldComponentProvider
 	private GridConfigurationProvider configurationProvider;
 
 	@Autowired
+	private LocalDateToDateConverterBean converter;
+
+	@Autowired
 	public BeanGridDateFieldComponentProvider(GridConfigurationProvider configurationProvider) {
 		this.configurationProvider = configurationProvider;
 	}
 
 	@Override
-	public LocalDateToDateConverter getConverter() {
-		return new LocalDateToDateConverter(configurationProvider.getTimeZoneId());
+	public LocalDateToDateConverterBean getConverter() {
+		return converter;
 	}
 
 	@Override

@@ -25,9 +25,8 @@ import com.vaadin.data.Converter;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.peter.addon.beangrid.converter.ConfigurableConverter;
+import com.vaadin.peter.addon.beangrid.converter.AbstractStringToNumberConverterBean;
 import com.vaadin.peter.addon.beangrid.editorprovider.BeanGridEditorComponentProvider;
-import com.vaadin.peter.addon.beangrid.editorprovider.ConfigurableBeanGridValueConvertingEditorComponentProvider;
 import com.vaadin.peter.addon.beangrid.summary.Summarizer;
 import com.vaadin.peter.addon.beangrid.valueprovider.BeanGridDefaultValueProvider;
 import com.vaadin.peter.addon.beangrid.valueprovider.BeanGridValueProvider;
@@ -45,7 +44,7 @@ import com.vaadin.ui.renderers.AbstractRenderer;
  */
 @Configuration
 @ComponentScan(basePackageClasses = { BeanGridEditorComponentProvider.class, BeanGridValueProvider.class,
-		Summarizer.class, ConfigurableConverter.class })
+		Summarizer.class, AbstractStringToNumberConverterBean.class })
 public class BeanGridConfiguration implements ApplicationContextAware {
 
 	private ApplicationContext appContext;
@@ -210,7 +209,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 	 * @param column
 	 */
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings("unchecked")
 	protected <ITEM> void setupEditableColumn(Grid<ITEM> grid, ColumnDefinition definition,
 			Column<ITEM, Object> column) {
 		ResolvableType editorProviderType = ResolvableType.forClassWithGenerics(BeanGridEditorComponentProvider.class,
@@ -239,11 +238,6 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 				.forField(editorComponent);
 
 		bindingBuilder = bindingBuilder.withNullRepresentation(editorComponent.getEmptyValue());
-
-		if (editorProvider instanceof ConfigurableBeanGridValueConvertingEditorComponentProvider) {
-			ConfigurableBeanGridValueConvertingEditorComponentProvider configurableEditorProvider = (ConfigurableBeanGridValueConvertingEditorComponentProvider) editorProvider;
-			configurableEditorProvider.configureConverter(definition);
-		}
 
 		if (editorProvider.requiresConversion()) {
 			Converter<Object, Object> converter = (Converter<Object, Object>) editorProvider.asConvertable()

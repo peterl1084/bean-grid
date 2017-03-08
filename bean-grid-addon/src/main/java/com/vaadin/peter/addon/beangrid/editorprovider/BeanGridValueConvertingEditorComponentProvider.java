@@ -2,6 +2,7 @@ package com.vaadin.peter.addon.beangrid.editorprovider;
 
 import com.vaadin.data.Converter;
 import com.vaadin.data.HasValue;
+import com.vaadin.peter.addon.beangrid.converter.ConverterBean;
 
 /**
  * BeanGridValueConvertingEditorComponentProvider is a specialized
@@ -29,5 +30,5 @@ public interface BeanGridValueConvertingEditorComponentProvider<FIELD_TYPE, PROP
 	 * @return {@link Converter} capable of converting between the FIELD_TYPE
 	 *         and PROPERTY_TYPE
 	 */
-	Converter<FIELD_TYPE, PROPERTY_TYPE> getConverter();
+	ConverterBean<FIELD_TYPE, PROPERTY_TYPE> getConverter();
 }

@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.ResolvableType;
 
-import com.vaadin.data.ValueContext;
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
 import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
-import com.vaadin.peter.addon.beangrid.converter.ConfigurableConverter;
+import com.vaadin.peter.addon.beangrid.converter.ColumnDefinitionValueContext;
+import com.vaadin.peter.addon.beangrid.converter.ConverterBean;
 
 /**
  * AbstractSummarizer is abstract implementation of {@link Summarizer} which
@@ -31,7 +31,7 @@ public abstract class AbstractSummarizer<PROPERTY_TYPE> implements Summarizer<PR
 
 	private Class<PROPERTY_TYPE> propertyType;
 
-	private ConfigurableConverter<PROPERTY_TYPE> converter;
+	private ConverterBean<String, PROPERTY_TYPE> converter;
 
 	public AbstractSummarizer(Class<PROPERTY_TYPE> propertyType) {
 		this.propertyType = propertyType;
@@ -40,10 +40,10 @@ public abstract class AbstractSummarizer<PROPERTY_TYPE> implements Summarizer<PR
 	@PostConstruct
 	@SuppressWarnings("unchecked")
 	protected void initialize() {
-		ResolvableType converterResolvable = ResolvableType.forClassWithGenerics(ConfigurableConverter.class,
+		ResolvableType converterResolvable = ResolvableType.forClassWithGenerics(ConverterBean.class, String.class,
 				propertyType);
 		String converterBeanName = Arrays.asList(appContext.getBeanNamesForType(converterResolvable)).iterator().next();
-		converter = appContext.getBean(converterBeanName, ConfigurableConverter.class);
+		converter = appContext.getBean(converterBeanName, ConverterBean.class);
 	}
 
 	@Autowired
@@ -54,8 +54,8 @@ public abstract class AbstractSummarizer<PROPERTY_TYPE> implements Summarizer<PR
 	@Override
 	public String summarize(ColumnDefinition definition, Collection<PROPERTY_TYPE> allAvailableValues) {
 		PROPERTY_TYPE summaryValue = doSummarize(definition, allAvailableValues);
-		converter.configureWithPattern(definition.getFormat().orElse(null));
-		return converter.convertToPresentation(summaryValue, new ValueContext(configurationProvider.getLocale()));
+		return converter.convertToPresentation(summaryValue,
+				new ColumnDefinitionValueContext(configurationProvider.getLocale(), definition));
 	}
 
 	protected abstract PROPERTY_TYPE doSummarize(ColumnDefinition definition,

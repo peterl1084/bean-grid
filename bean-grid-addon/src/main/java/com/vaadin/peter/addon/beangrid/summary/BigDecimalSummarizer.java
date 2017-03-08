@@ -4,13 +4,11 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Objects;
 
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
 
 @Component
-@Scope(scopeName = "prototype")
 public class BigDecimalSummarizer extends AbstractSummarizer<BigDecimal> {
 
 	public BigDecimalSummarizer() {

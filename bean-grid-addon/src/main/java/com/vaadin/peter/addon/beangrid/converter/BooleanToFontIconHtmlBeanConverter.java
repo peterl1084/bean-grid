@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.vaadin.data.Converter;
 import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
 import com.vaadin.icons.VaadinIcons;
@@ -20,7 +19,7 @@ import com.vaadin.ui.renderers.HtmlRenderer;
  * @author Peter / Vaadin
  */
 @SingletonConverter
-public class BooleanToFontIconHtmlBeanConverter implements Converter<String, Boolean> {
+public class BooleanToFontIconHtmlBeanConverter implements ConverterBean<String, Boolean> {
 
 	private static final FontIcon TRUE_ICON = VaadinIcons.CHECK;
 	private static final FontIcon FALSE_ICON = VaadinIcons.CLOSE;

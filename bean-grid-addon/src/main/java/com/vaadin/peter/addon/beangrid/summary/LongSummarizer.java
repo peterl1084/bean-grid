@@ -3,13 +3,11 @@ package com.vaadin.peter.addon.beangrid.summary;
 import java.util.Collection;
 import java.util.Objects;
 
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
 
 @Component
-@Scope(scopeName = "prototype")
 public class LongSummarizer extends AbstractSummarizer<Long> {
 
 	public LongSummarizer() {

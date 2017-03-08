@@ -1,14 +1,9 @@
 package com.vaadin.peter.addon.beangrid.converter;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.util.Locale;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.data.Result;
+import com.vaadin.data.ValueContext;
 import com.vaadin.peter.addon.beangrid.GridColumn;
 import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
 
@@ -20,34 +15,32 @@ import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
  * 
  * @author Peter / Vaadin
  */
-@PrototypeConverter
-public class StringToIntegerBeanConverter extends StringToIntegerConverter implements ConfigurableConverter<Integer> {
-
-	private String pattern;
-	private GridConfigurationProvider configurationProvider;
+@SingletonConverter
+public class StringToIntegerBeanConverter extends AbstractStringToNumberConverterBean<Integer> {
 
 	@Autowired
 	public StringToIntegerBeanConverter(GridConfigurationProvider configurationProvider) {
-		super(configurationProvider.getConversionErrorString());
-		this.configurationProvider = configurationProvider;
+		super(configurationProvider);
 	}
 
 	@Override
-	protected NumberFormat getFormat(Locale locale) {
-		String selectedPattern = Optional.ofNullable(pattern)
-				.orElse(configurationProvider.getNumberFormatPattern().orElse(null));
-
-		if (selectedPattern == null) {
-			return super.getFormat(locale);
-		}
-
-		DecimalFormat decimalFormat = new DecimalFormat(selectedPattern, new DecimalFormatSymbols(locale));
-		decimalFormat.setParseBigDecimal(true);
-		return decimalFormat;
-	}
-
-	@Override
-	public void configureWithPattern(String pattern) {
-		this.pattern = pattern;
+	public Result<Integer> convertToModel(String value, ValueContext context) {
+		Result<Number> n = convertToNumber(value, context);
+		return n.flatMap(number -> {
+			if (number == null) {
+				return Result.ok(null);
+			} else {
+				int intValue = number.intValue();
+				if (intValue == number.longValue()) {
+					// If the value of n is outside the range of long, the
+					// return value of longValue() is either Long.MIN_VALUE or
+					// Long.MAX_VALUE. The/ above comparison promotes int to
+					// long and thus does not need to consider wrap-around.
+					return Result.ok(intValue);
+				} else {
+					return Result.error(getErrorMessage());
+				}
+			}
+		});
 	}
 }

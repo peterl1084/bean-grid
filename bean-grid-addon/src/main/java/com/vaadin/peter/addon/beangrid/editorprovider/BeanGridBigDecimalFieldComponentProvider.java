@@ -2,7 +2,6 @@ package com.vaadin.peter.addon.beangrid.editorprovider;
 
 import java.math.BigDecimal;
 
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
@@ -18,9 +17,8 @@ import com.vaadin.ui.TextField;
  * @author Peter / Vaadin
  */
 @Component
-@Scope(scopeName = "prototype")
 public class BeanGridBigDecimalFieldComponentProvider
-		extends AbstractGridValueConfigurableConvertingEditorComponentProvider<BigDecimal> {
+		extends AbstractGridNumberValueEditorComponentProvider<BigDecimal> {
 
 	public BeanGridBigDecimalFieldComponentProvider() {
 		super(BigDecimal.class);
