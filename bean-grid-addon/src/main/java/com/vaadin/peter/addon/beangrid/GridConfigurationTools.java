@@ -9,7 +9,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -29,6 +31,16 @@ import com.vaadin.ui.Grid.SelectionMode;
  */
 public class GridConfigurationTools {
 	private static Logger logger = LoggerFactory.getLogger(GridConfigurationTools.class);
+
+	private static Map<GridMode, SelectionMode> selectionModeMap;
+
+	static {
+		Map<GridMode, SelectionMode> modeMap = new EnumMap<>(GridMode.class);
+		modeMap.put(GridMode.NONE, SelectionMode.NONE);
+		modeMap.put(GridMode.SINGLE, SelectionMode.SINGLE);
+		modeMap.put(GridMode.MULTI, SelectionMode.MULTI);
+		selectionModeMap = Collections.unmodifiableMap(modeMap);
+	}
 
 	/**
 	 * Finds {@link GridColumn} definitions from given itemType.
@@ -110,7 +122,7 @@ public class GridConfigurationTools {
 		}
 
 		if (itemType.isAnnotationPresent(GridSelectionMode.class)) {
-			return itemType.getAnnotation(GridSelectionMode.class).value();
+			return selectionModeMap.get(itemType.getAnnotation(GridSelectionMode.class).value());
 		}
 
 		return SelectionMode.NONE;

@@ -3,6 +3,7 @@ package com.vaadin.peter.addon.beangrid.summary;
 import java.util.Collection;
 
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
+import com.vaadin.peter.addon.beangrid.SummarizableColumn;
 
 /**
  * Summarizer is top level interface for all Summarizers that work with specific
@@ -35,24 +36,4 @@ public interface Summarizer<PROPERTY_TYPE> {
 	 *         allAvailableValues, false otherwise.
 	 */
 	boolean canSummarize(ColumnDefinition definition, Collection<PROPERTY_TYPE> allAvailableValues);
-
-	/**
-	 * DefaultNoOpSummarizer is hidden internal default value for
-	 * {@link SummarizableColumn}'s summarizer attribute. It is not intended to
-	 * be used anywhere ever.
-	 * 
-	 * @author Peter / Vaadin
-	 */
-	class DefaultNoOpSummarizer implements Summarizer<Object> {
-
-		@Override
-		public String summarize(ColumnDefinition definition, Collection<Object> allAvailableValues) {
-			return null;
-		}
-
-		@Override
-		public boolean canSummarize(ColumnDefinition definition, Collection<Object> allAvailableValues) {
-			return false;
-		}
-	}
 }

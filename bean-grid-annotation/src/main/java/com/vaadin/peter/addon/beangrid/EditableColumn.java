@@ -5,11 +5,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.vaadin.ui.Grid;
-
 /**
  * EditableColumn is an annotation that is intended to be used together with
- * {@link GridColumn} on such fields that are to be editable within {@link Grid}
+ * {@link GridColumn} on such fields that are to be editable within Vaadin Grid.
  * when editor functionality is enabled.
  * 
  * @author Peter / Vaadin

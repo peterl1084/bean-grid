@@ -5,9 +5,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.vaadin.peter.addon.beangrid.valueprovider.BeanGridValueProvider;
-import com.vaadin.ui.renderers.Renderer;
-
 /**
  * GridColumn is the annotation to use in item getter or fields when appropriate
  * property is to be shown in the Grid as column.
@@ -56,7 +53,7 @@ public @interface GridColumn {
 
 	/**
 	 * @return Format String that should be used with this column type. The
-	 *         format is highly dependent on visualizing {@link Renderer} or
+	 *         format is highly dependent on visualizing Grid Renderer or
 	 *         otherwise used {@link BeanGridValueProvider}. This attribute is
 	 *         optional and system will always default to configured properties.
 	 *         Defining the format here should be used only in exceptional

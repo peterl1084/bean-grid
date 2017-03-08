@@ -12,10 +12,7 @@ import java.util.Optional;
 
 import org.springframework.util.StringUtils;
 
-import com.vaadin.peter.addon.beangrid.summary.SummarizableColumn;
 import com.vaadin.peter.addon.beangrid.summary.SummarizableColumnStaticText;
-import com.vaadin.peter.addon.beangrid.summary.Summarizer;
-import com.vaadin.peter.addon.beangrid.summary.Summarizer.DefaultNoOpSummarizer;
 
 /**
  * ColumnDefinition describes a column used in Vaadin Grid, defined
@@ -157,26 +154,6 @@ public class ColumnDefinition implements Comparable<ColumnDefinition> {
 	 */
 	public Method getWriteMethod() {
 		return descriptor.getWriteMethod();
-	}
-
-	/**
-	 * @return the type of the {@link Summarizer} defined within the
-	 *         {@link SummarizableColumn} annotation. If no specific Summarizer
-	 *         is defined the DefaultNoOpSummarizer will be returned. It's
-	 *         purpose is to mark "null summarizer" and should not be used.
-	 */
-	@SuppressWarnings("unchecked")
-	public <T> Class<? extends Summarizer<T>> getSummarizerType() {
-		return (Class<? extends Summarizer<T>>) summarizableDefinition.summarizer();
-	}
-
-	/**
-	 * @return true if this column has a specific summarizer defined in
-	 *         {@link SummarizableColumn#summarizer()}, false otherwise.
-	 */
-	public boolean isSpecificSummarizerDefined() {
-		Class<? extends Summarizer<?>> summarizerType = getSummarizerType();
-		return !DefaultNoOpSummarizer.class.equals(summarizerType);
 	}
 
 	/**

@@ -12,6 +12,12 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>com.vaadin.peter.addon</groupId>
+			<artifactId>bean-grid-annotation</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>

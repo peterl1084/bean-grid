@@ -114,7 +114,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 
 				column.setId(definition.getPropertyName());
 				column.setStyleGenerator((item) -> {
-					return definition.getColumnAlignment().getStyleName();
+					return definition.getColumnAlignment().getAlignmentName();
 				});
 
 				if (gridConfigurationProvider != null) {
@@ -148,7 +148,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 	private <ITEM, RENDERER_TYPE, PROPERTY_TYPE> void refreshColumnSummary(Grid<ITEM> grid,
 			ColumnDefinition definition) {
 		FooterCell footerCell = grid.getFooterRow(0).getCell(definition.getPropertyName());
-		footerCell.setStyleName(definition.getColumnAlignment().getStyleName());
+		footerCell.setStyleName(definition.getColumnAlignment().getAlignmentName());
 
 		if (definition.isStaticTextSummarizable()) {
 			String translatedStaticText = gridConfigurationProvider
@@ -177,26 +177,22 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 		Class<? extends Summarizer<TYPE>> summarizerType = null;
 		String summarizerBeanName = null;
 
-		if (definition.isSpecificSummarizerDefined()) {
-			summarizerType = definition.getSummarizerType();
-		} else {
-			ResolvableType resolvableSummarizerType = ResolvableType.forClassWithGenerics(Summarizer.class,
-					definition.getPropertyType());
-			List<String> availableSummarizerBeanNames = Arrays
-					.asList(appContext.getBeanNamesForType(resolvableSummarizerType));
+		ResolvableType resolvableSummarizerType = ResolvableType.forClassWithGenerics(Summarizer.class,
+				definition.getPropertyType());
+		List<String> availableSummarizerBeanNames = Arrays
+				.asList(appContext.getBeanNamesForType(resolvableSummarizerType));
 
-			if (availableSummarizerBeanNames.isEmpty()) {
-				throw new ColumnDefinitionException("No summarizer available for property type "
-						+ definition.getPropertyType().getSimpleName() + ".");
-			} else if (availableSummarizerBeanNames.size() > 1) {
-				throw new ColumnDefinitionException("There are more than one summarizer available for property type "
-						+ definition.getPropertyType().getSimpleName() + ": "
-						+ availableSummarizerBeanNames.stream().collect(Collectors.joining(", ")));
-			}
-
-			summarizerBeanName = availableSummarizerBeanNames.iterator().next();
-			summarizerType = (Class<? extends Summarizer<TYPE>>) appContext.getType(summarizerBeanName);
+		if (availableSummarizerBeanNames.isEmpty()) {
+			throw new ColumnDefinitionException(
+					"No summarizer available for property type " + definition.getPropertyType().getSimpleName() + ".");
+		} else if (availableSummarizerBeanNames.size() > 1) {
+			throw new ColumnDefinitionException("There are more than one summarizer available for property type "
+					+ definition.getPropertyType().getSimpleName() + ": "
+					+ availableSummarizerBeanNames.stream().collect(Collectors.joining(", ")));
 		}
+
+		summarizerBeanName = availableSummarizerBeanNames.iterator().next();
+		summarizerType = (Class<? extends Summarizer<TYPE>>) appContext.getType(summarizerBeanName);
 
 		if (summarizerType == null) {
 			throw new ColumnDefinitionException("Could not determine type of the summarizer for column "

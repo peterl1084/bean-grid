@@ -29,10 +29,9 @@ public enum ColumnAlignment {
 	}
 
 	/**
-	 * @return the CSS stylename associated with this {@link ColumnAlignment}
-	 *         type.
+	 * @return the name associated with this {@link ColumnAlignment} type.
 	 */
-	public String getStyleName() {
+	public String getAlignmentName() {
 		return styleName;
 	}
 }

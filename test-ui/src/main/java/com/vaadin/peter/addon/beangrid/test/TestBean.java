@@ -9,13 +9,13 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.peter.addon.beangrid.ColumnAlignment;
 import com.vaadin.peter.addon.beangrid.EditableColumn;
 import com.vaadin.peter.addon.beangrid.GridColumn;
+import com.vaadin.peter.addon.beangrid.GridMode;
 import com.vaadin.peter.addon.beangrid.GridSelectionMode;
-import com.vaadin.peter.addon.beangrid.summary.SummarizableColumn;
+import com.vaadin.peter.addon.beangrid.SummarizableColumn;
 import com.vaadin.peter.addon.beangrid.summary.SummarizableColumnStaticText;
 import com.vaadin.server.FontIcon;
-import com.vaadin.ui.Grid.SelectionMode;
 
-@GridSelectionMode(SelectionMode.MULTI)
+@GridSelectionMode(GridMode.MULTI)
 public class TestBean {
 
 	private String id;

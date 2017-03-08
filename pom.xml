@@ -35,6 +35,7 @@
 	<modules>
 		<module>bean-grid-addon</module>
 		<module>test-ui</module>
+		<module>bean-grid-annotation</module>
 	</modules>
 
 	<repositories>
