@@ -30,6 +30,7 @@ import com.vaadin.peter.addon.beangrid.editorprovider.BeanGridEditorComponentPro
 import com.vaadin.peter.addon.beangrid.summary.Summarizer;
 import com.vaadin.peter.addon.beangrid.valueprovider.BeanGridDefaultValueProvider;
 import com.vaadin.peter.addon.beangrid.valueprovider.BeanGridValueProvider;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.Grid.SelectionMode;
@@ -233,6 +234,7 @@ public class BeanGridConfiguration implements ApplicationContextAware {
 				.getBean(editorProviderNames.iterator().next(), BeanGridEditorComponentProvider.class);
 
 		HasValue<?> editorComponent = editorProvider.provideEditorComponent(definition);
+		((AbstractComponent) editorComponent).setData(definition);
 
 		BindingBuilder<ITEM, Object> bindingBuilder = (BindingBuilder<ITEM, Object>) grid.getEditor().getBinder()
 				.forField(editorComponent);

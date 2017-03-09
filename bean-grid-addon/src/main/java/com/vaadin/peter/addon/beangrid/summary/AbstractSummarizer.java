@@ -2,17 +2,20 @@ package com.vaadin.peter.addon.beangrid.summary;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.ResolvableType;
 
+import com.vaadin.data.ValueContext;
 import com.vaadin.peter.addon.beangrid.ColumnDefinition;
-import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
-import com.vaadin.peter.addon.beangrid.converter.ColumnDefinitionValueContext;
 import com.vaadin.peter.addon.beangrid.converter.ConverterBean;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Component;
 
 /**
  * AbstractSummarizer is abstract implementation of {@link Summarizer} which
@@ -22,11 +25,8 @@ import com.vaadin.peter.addon.beangrid.converter.ConverterBean;
  *
  * @param <PROPERTY_TYPE>
  */
-public abstract class AbstractSummarizer<PROPERTY_TYPE> implements Summarizer<PROPERTY_TYPE> {
+public abstract class AbstractSummarizer<PROPERTY_TYPE> implements Summarizer<PROPERTY_TYPE>, ApplicationContextAware {
 
-	private GridConfigurationProvider configurationProvider;
-
-	@Autowired
 	private ApplicationContext appContext;
 
 	private Class<PROPERTY_TYPE> propertyType;
@@ -46,18 +46,36 @@ public abstract class AbstractSummarizer<PROPERTY_TYPE> implements Summarizer<PR
 		converter = appContext.getBean(converterBeanName, ConverterBean.class);
 	}
 
-	@Autowired
-	protected void setGridConfigurationProvider(GridConfigurationProvider configurationProvider) {
-		this.configurationProvider = configurationProvider;
-	}
-
 	@Override
 	public String summarize(ColumnDefinition definition, Collection<PROPERTY_TYPE> allAvailableValues) {
 		PROPERTY_TYPE summaryValue = doSummarize(definition, allAvailableValues);
-		return converter.convertToPresentation(summaryValue,
-				new ColumnDefinitionValueContext(configurationProvider.getLocale(), definition));
+		return converter.convertToPresentation(summaryValue, new ValueContextDelegate(definition));
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.appContext = applicationContext;
 	}
 
 	protected abstract PROPERTY_TYPE doSummarize(ColumnDefinition definition,
 			Collection<PROPERTY_TYPE> allAvailableValues);
+
+	private static class ValueContextDelegate extends ValueContext {
+		private final ColumnDefinition definition;
+
+		public ValueContextDelegate(ColumnDefinition definition) {
+			this.definition = definition;
+		}
+
+		// :(
+		@Override
+		public Optional<Component> getComponent() {
+			return Optional.of(new AbstractComponent() {
+				@Override
+				public Object getData() {
+					return definition;
+				}
+			});
+		}
+	}
 }

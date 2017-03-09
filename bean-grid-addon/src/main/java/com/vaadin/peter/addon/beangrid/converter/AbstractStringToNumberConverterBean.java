@@ -21,13 +21,14 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.Locale;
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
+import com.vaadin.peter.addon.beangrid.ColumnDefinition;
 import com.vaadin.peter.addon.beangrid.GridConfigurationProvider;
+import com.vaadin.ui.AbstractComponent;
 
 /**
  * AbstractStringToNumberConverterBean is the abstract base class for all such
@@ -62,8 +63,10 @@ public abstract class AbstractStringToNumberConverterBean<PROPERTY_TYPE extends 
 	protected NumberFormat getFormat(ValueContext context) {
 		String pattern = null;
 
-		if (context instanceof ColumnDefinitionValueContext) {
-			pattern = Objects.requireNonNull((ColumnDefinitionValueContext) context).getDefinition().getFormat()
+		Object data = context.getComponent().map(AbstractComponent.class::cast).map(component -> component.getData())
+				.orElse(null);
+		if (data instanceof ColumnDefinition) {
+			pattern = ((ColumnDefinition) data).getFormat()
 					.orElse(configurationProvider.getNumberFormatPattern().orElse(null));
 		}
 
