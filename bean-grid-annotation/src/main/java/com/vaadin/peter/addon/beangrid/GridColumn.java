@@ -54,10 +54,9 @@ public @interface GridColumn {
 	/**
 	 * @return Format String that should be used with this column type. The
 	 *         format is highly dependent on visualizing Grid Renderer or
-	 *         otherwise used {@link BeanGridValueProvider}. This attribute is
-	 *         optional and system will always default to configured properties.
-	 *         Defining the format here should be used only in exceptional
-	 *         cases.
+	 *         otherwise used BeanGridValueProvider. This attribute is optional
+	 *         and system will always default to configured properties. Defining
+	 *         the format here should be used only in exceptional cases.
 	 */
 	String format() default "";
 }
