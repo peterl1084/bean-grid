@@ -7,7 +7,7 @@ import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
 
 /**
- * StringToCharacterBeanConverter is {@link Converter} between String <->
+ * StringToCharacterBeanConverter is {@link Converter} between String and
  * Character. This converter is immutable and hence singleton safe.
  * 
  * @author Peter / Vaadin

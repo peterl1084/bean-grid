@@ -13,9 +13,8 @@ import com.vaadin.peter.addon.beangrid.converter.ConverterBean;
 
 /**
  * AbstractGridValueConfigurableConvertingEditorComponentProvider is an abstract
- * implementation of ConfigurableBeanGridValueConvertingEditorComponentProvider
- * which takes care of {@link ConfigurableConverter} discovery and
- * instantiation.
+ * implementation of BeanGridValueConvertingEditorComponentProvider which takes
+ * care of discovery and instantiation of appropriate value converters.
  * 
  * @author Peter / Vaadin
  *

@@ -9,7 +9,7 @@ import com.vaadin.peter.addon.beangrid.converter.StringToCharacterBeanConverter;
 import com.vaadin.ui.TextField;
 
 /**
- * BeanGridCharacterComponentProvider allows creating Character <-> String <->
+ * BeanGridCharacterComponentProvider allows creating Character to String to
  * Character capable editor components and associated {@link Converter}s.
  * 
  * This bean is immutable and singleton safe.

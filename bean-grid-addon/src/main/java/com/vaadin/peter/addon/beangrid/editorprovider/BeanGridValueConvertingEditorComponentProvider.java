@@ -25,8 +25,6 @@ public interface BeanGridValueConvertingEditorComponentProvider<FIELD_TYPE, PROP
 		extends BeanGridEditorComponentProvider<PROPERTY_TYPE> {
 
 	/**
-	 * @param definition
-	 *            that may be used to configure the converter.
 	 * @return {@link Converter} capable of converting between the FIELD_TYPE
 	 *         and PROPERTY_TYPE
 	 */

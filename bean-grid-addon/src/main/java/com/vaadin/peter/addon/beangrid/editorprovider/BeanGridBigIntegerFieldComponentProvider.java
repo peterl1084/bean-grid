@@ -8,11 +8,7 @@ import com.vaadin.peter.addon.beangrid.ColumnDefinition;
 import com.vaadin.ui.TextField;
 
 /**
- * BeanGridBigDecimalFieldComponentProvider is component provider capable of
- * BigInteger <-> String <-> BigInteger conversion. As this bean implements
- * {@link ConfigurableBeanGridValueConvertingEditorComponentProvider} it's NOT
- * immutable and hence not singleton safe and should always be declared as
- * prototype scoped.
+ * BeanGridBigIntegerFieldComponentProvider
  * 
  * @author Peter / Vaadin
  */

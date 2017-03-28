@@ -32,14 +32,12 @@ import com.vaadin.ui.AbstractComponent;
 
 /**
  * AbstractStringToNumberConverterBean is the abstract base class for all such
- * converters that do conversions between String <-> Number. This class has been
+ * converters that do conversions between String and Number. This class has been
  * adapted from Vaadin Framework 8.0 and modified for the purposes of supporting
  * {@link ValueContext} passing and configurability through
  * {@link GridConfigurationProvider}
  * 
  * @author Peter / Vaadin
- *
- * @param <PROPERTY_TYPE>
  */
 public abstract class AbstractStringToNumberConverterBean<PROPERTY_TYPE extends Number>
 		implements ConverterBean<String, PROPERTY_TYPE> {
@@ -56,8 +54,8 @@ public abstract class AbstractStringToNumberConverterBean<PROPERTY_TYPE extends 
 	 * {@link #convertToPresentation(Object, ValueContext)} and
 	 * {@link #convertToModel(Object, ValueContext)}.
 	 *
-	 * @param locale
-	 *            The locale to use
+	 * @param context
+	 *            value context to use
 	 * @return A NumberFormat instance
 	 */
 	protected NumberFormat getFormat(ValueContext context) {
@@ -80,12 +78,11 @@ public abstract class AbstractStringToNumberConverterBean<PROPERTY_TYPE extends 
 	}
 
 	/**
-	 * Convert the value to a Number using the given locale and
-	 * {@link #getFormat(Locale)}.
+	 * Convert the value to a Number using the given valueContext
 	 *
 	 * @param value
 	 *            The value to convert
-	 * @param locale
+	 * @param valueContext
 	 *            The locale to use for conversion
 	 * @return The converted value
 	 */

@@ -13,7 +13,7 @@ import com.vaadin.ui.DateField;
 
 /**
  * BeanGridDateFieldComponentProvider is component provider capable of producing
- * components and conversion between Date <-> LocalDate <-> Date types.
+ * components and conversion between Date to LocalDate to Date types.
  * 
  * This bean is immutable and singleton safe.
  * 

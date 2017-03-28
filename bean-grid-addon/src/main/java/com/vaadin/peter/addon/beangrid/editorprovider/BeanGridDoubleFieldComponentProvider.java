@@ -6,11 +6,7 @@ import com.vaadin.peter.addon.beangrid.ColumnDefinition;
 import com.vaadin.ui.TextField;
 
 /**
- * BeanGridDoubleFieldComponentProvider is component provider capable of Double
- * <-> String <-> Double conversion. As this bean implements
- * {@link ConfigurableBeanGridValueConvertingEditorComponentProvider} it's NOT
- * immutable and hence not singleton safe and should always be declared as
- * prototype scoped.
+ * BeanGridDoubleFieldComponentProvider
  * 
  * @author Peter / Vaadin
  */
