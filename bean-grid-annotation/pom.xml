@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.vaadin.peter.addon</groupId>
 	<artifactId>bean-grid-annotation</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0-RELEASE</version>
 
 	<name>BeanGrid Add-on for Vaadin 8 - Common Annotations</name>
 	<description>The Common Annotations module contains all such annotations that can be positioned on DTOs. This artifact may be used as a dependency on any project that requires usage of BeanGrid's annotations without becoming dependent on any Vaadin related material.</description>
@@ -37,7 +36,8 @@
 		<url>https://github.com/${github.account}/${github.project}</url>
 		<connection>scm:git:git://github.com/${github.account}/${github.project}.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com:/${github.account}/${github.project}.git</developerConnection>
-	</scm>
+	  <tag>bean-grid-annotation-1.0.0-RELEASE</tag>
+  </scm>
 	<issueManagement>
 		<system>GitHub</system>
 		<url>https://github.com/${github.account}/${github.project}/issues</url>
