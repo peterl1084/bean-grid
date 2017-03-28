@@ -1,9 +1,11 @@
 package com.vaadin.peter.addon.beangrid.test;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
@@ -16,7 +18,7 @@ import com.vaadin.ui.VerticalLayout;
 public class TestUI extends UI {
 
 	@Autowired
-	private Grid<TestBean> testGrid;
+	private Grid<Customer> testGrid;
 
 	@Override
 	protected void init(VaadinRequest request) {
@@ -29,16 +31,19 @@ public class TestUI extends UI {
 		testGrid.setSizeFull();
 		testGrid.getEditor().setEnabled(true);
 
-		TestBean a = new TestBean("Mr", "Vaadin", LocalDate.of(2000, 1, 1));
-		a.setBdValue(BigDecimal.valueOf(100.25));
-
-		TestBean b = new TestBean("Mr", "GWT", LocalDate.of(2000, 1, 1));
-		b.setBdValue(BigDecimal.valueOf(38.50));
-
-		testGrid.setItems(a, b);
+		testGrid.setItems(getCustomers());
 
 		layout.addComponent(testGrid);
 
 		setContent(layout);
+	}
+
+	private List<Customer> getCustomers() {
+		Customer a = new Customer(0, "John", "Doe");
+		a.setOpenInvoiceTotal(BigDecimal.valueOf(500.25));
+		Customer b = new Customer(1, "Jack", "Smith");
+		b.setOpenInvoiceTotal(BigDecimal.valueOf(250.45));
+
+		return Arrays.asList(a, b);
 	}
 }
