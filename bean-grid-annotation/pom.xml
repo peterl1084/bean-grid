@@ -3,7 +3,7 @@
 
 	<groupId>com.vaadin.peter.addon</groupId>
 	<artifactId>bean-grid-annotation</artifactId>
-	<version>1.0.0-RELEASE</version>
+	<version>1.0.1-SNAPSHOT</version>
 
 	<name>BeanGrid Add-on for Vaadin 8 - Common Annotations</name>
 	<description>The Common Annotations module contains all such annotations that can be positioned on DTOs. This artifact may be used as a dependency on any project that requires usage of BeanGrid's annotations without becoming dependent on any Vaadin related material.</description>
@@ -36,7 +36,7 @@
 		<url>https://github.com/${github.account}/${github.project}</url>
 		<connection>scm:git:git://github.com/${github.account}/${github.project}.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com:/${github.account}/${github.project}.git</developerConnection>
-	  <tag>bean-grid-annotation-1.0.0-RELEASE</tag>
+	  <tag>HEAD</tag>
   </scm>
 	<issueManagement>
 		<system>GitHub</system>
