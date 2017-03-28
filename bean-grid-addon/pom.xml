@@ -3,7 +3,7 @@
 
 	<groupId>com.vaadin.peter.addon</groupId>
 	<artifactId>bean-grid-addon</artifactId>
-	<version>1.0.0-RELEASE</version>
+	<version>1.0.1-SNAPSHOT</version>
 
 	<name>BeanGrid Add-on for Vaadin 8</name>
 	<description>Spring @Configuration enabled Grid for Vaadin 8</description>
@@ -48,7 +48,7 @@
 		<url>https://github.com/${github.account}/${github.project}</url>
 		<connection>scm:git:git://github.com/${github.account}/${github.project}.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com:/${github.account}/${github.project}.git</developerConnection>
-	  <tag>bean-grid-addon-1.0.0-RELEASE</tag>
+	  <tag>HEAD</tag>
   </scm>
 
 
@@ -68,7 +68,7 @@
 		<dependency>
 			<groupId>com.vaadin.peter.addon</groupId>
 			<artifactId>bean-grid-annotation</artifactId>
-			<version>1.0.0-RELEASE</version>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
